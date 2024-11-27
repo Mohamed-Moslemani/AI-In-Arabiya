@@ -1,0 +1,16 @@
+/* Footer Styles */
+.footer {
+    text-align: center;
+    background-color: #37AFE1;
+    padding: 10px;
+    color: white;
+}
+
+.footer a {
+    color: white;
+    text-decoration: underline;
+}
+
+.footer p {
+    margin: 0;
+}

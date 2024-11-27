@@ -1,0 +1,25 @@
+body {
+  font-family: 'Arial', sans-serif;
+  direction: rtl;
+  text-align: right;
+}
+
+.container {
+  padding: 20px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+h1, h2, p {
+  margin: 10px 0;
+}

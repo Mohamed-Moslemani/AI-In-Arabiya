@@ -1,0 +1,14 @@
+/* Home Page Styles */
+.home-container {
+    text-align: center;
+    padding: 50px 0;
+}
+
+.home-container h2 {
+    color: #37AFE1;
+}
+
+.home-container p {
+    font-size: 18px;
+    color: #4CC9FE;
+}
