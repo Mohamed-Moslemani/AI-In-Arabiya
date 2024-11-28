@@ -23,3 +23,6 @@ button:hover {
 h1, h2, p {
   margin: 10px 0;
 }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
