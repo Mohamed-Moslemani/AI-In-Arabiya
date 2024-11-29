@@ -3,7 +3,7 @@ from typing import Optional, List
 
 class UserSignup(BaseModel):
     name: str = Field(..., example="محمد")
-    age: Optional[int] = Field(None, ge=13, le=100, example=25)  # Make dynamic with DOB
+    age: Optional[int] = Field(None, ge=13, le=100, example=25) 
     email: EmailStr = Field(..., example="example@example.com")
     phone_number: Optional[str] = Field(None, example="123456789")
     gender: Optional[str] = Field(None, example="ذكر", pattern="^(ذكر|أنثى)$")

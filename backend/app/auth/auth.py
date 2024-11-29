@@ -1,21 +1,19 @@
 import os
 from datetime import datetime, timedelta
 from typing import Dict, Optional
-
 from bson import ObjectId
 from dotenv import load_dotenv
 from fastapi import HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from passlib.hash import bcrypt
-
-from app.database import users_collection
+from database import users_collection
 
 # Load environment variables
 load_dotenv()
 
 # JWT Configuration
-SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
     raise ValueError("JWT_SECRET_KEY is not set in the .env file")
 
