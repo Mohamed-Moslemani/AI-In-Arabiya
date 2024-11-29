@@ -1,68 +1,98 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import SignupImage from '../assets/images/bg.png'; 
-import EyeOpenIcon from '../assets/images/eyeopen.svg'
-import EyeCloseIcon from '../assets/images/eyeclose.svg'
+import SignupImage from '../assets/images/bg.png';
+import EyeOpenIcon from '../assets/images/eyeopen.svg';
+import EyeCloseIcon from '../assets/images/eyeclose.svg';
+import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
     name: '',
-    age: '',
     email: '',
+    study_level: '',
+    goals: '',
     password: '',
   });
+
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
+
     try {
-      const response = await axios.post('http://localhost:8000/auth/signup', formData);
+      const response = await axios.post(
+        'http://localhost:8000/auth/signup',
+        formData
+      );
       console.log('Signup successful:', response.data);
-      // Handle signup success (redirect to login, etc.)
+      navigate('/login'); // Redirect to login page after signup
     } catch (error) {
       console.error('Signup error:', error);
+      console.error('Error response:', error.response?.data);
     }
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex flex-col lg:flex-row h-screen">
       {/* Left Section */}
-      <div className="flex-1 flex flex-col justify-center px-12 py-8 bg-gradient-to-r from-blue-50 to-blue-100">
+      <div className="flex-1 flex flex-col justify-center px-8 lg:px-20 py-8 bg-gradient-to-r from-blue-50 to-blue-100">
         <h2 className="text-3xl font-bold mb-6 text-blue-800 text-center">إنشاء حساب جديد</h2>
-        <form onSubmit={handleSignup} className="space-y-4 max-w-md mx-auto">
+        <form onSubmit={handleSignup} className="space-y-6 max-w-xl mx-auto bg-white shadow-lg rounded-lg p-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Name (Required) */}
+            <div>
+              <label className="block text-blue-700 text-sm font-bold mb-2">الاسم:</label>
+              <input
+                type="text"
+                placeholder="أدخل اسمك"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 transition duration-300"
+              />
+            </div>
+
+            {/* Email (Required) */}
+            <div>
+              <label className="block text-blue-700 text-sm font-bold mb-2">البريد الإلكتروني:</label>
+              <input
+                type="email"
+                placeholder="أدخل بريدك الإلكتروني"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 transition duration-300"
+              />
+            </div>
+
+            {/* Study Level (Required) */}
+            <div>
+              <label className="block text-blue-700 text-sm font-bold mb-2">المستوى الدراسي:</label>
+              <input
+                type="text"
+                placeholder="مثال: طالب جامعي"
+                value={formData.study_level}
+                onChange={(e) => setFormData({ ...formData, study_level: e.target.value })}
+                required
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 transition duration-300"
+              />
+            </div>
+          </div>
+
+          {/* Goals (Required) */}
           <div>
-            <label className="block text-blue-700 text-sm font-bold mb-2">الاسم:</label>
-            <input
-              type="text"
-              placeholder="أدخل اسمك"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            <label className="block text-blue-700 text-sm font-bold mb-2">الأهداف:</label>
+            <textarea
+              placeholder="ما هي أهدافك؟"
+              value={formData.goals}
+              onChange={(e) => setFormData({ ...formData, goals: e.target.value })}
               required
               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 transition duration-300"
-            />
+            ></textarea>
           </div>
-          <div>
-            <label className="block text-blue-700 text-sm font-bold mb-2">العمر:</label>
-            <input
-              type="number"
-              placeholder="أدخل عمرك"
-              value={formData.age}
-              onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-              required
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 transition duration-300"
-            />
-          </div>
-          <div>
-            <label className="block text-blue-700 text-sm font-bold mb-2">البريد الإلكتروني:</label>
-            <input
-              type="email"
-              placeholder="أدخل بريدك الإلكتروني"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              required
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 transition duration-300"
-            />
-          </div>
+
+          {/* Password (Required) */}
           <div className="relative">
             <label className="block text-blue-700 text-sm font-bold mb-2">كلمة المرور:</label>
             <div className="flex items-center border-2 border-gray-300 rounded-lg focus-within:border-blue-400 transition duration-300">
@@ -87,6 +117,8 @@ const Signup = () => {
               />
             </div>
           </div>
+
+          {/* Submit Button */}
           <button
             type="submit"
             className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300"

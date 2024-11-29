@@ -1,52 +1,60 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import LoginImage from '../assets/images/bg.png'; 
-import EyeOpenIcon from '../assets/images/eyeopen.svg'; 
-import EyeCloseIcon from '../assets/images/eyeclose.svg'; 
+import React, { useState } from "react";
+import axios from "axios";
+import LoginImage from "../assets/images/bg.png";
+import EyeOpenIcon from "../assets/images/eyeopen.svg";
+import EyeCloseIcon from "../assets/images/eyeclose.svg";
+import { useNavigate } from "react-router-dom";
 
-const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const Login = ({ onLogin }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8000/auth/login', {
+      const response = await axios.post("http://localhost:8000/auth/login", {
         email,
         password,
       });
-      console.log('Login successful:', response.data);
-      // Handle login success (store token, redirect, etc.)
+      localStorage.setItem("access_token", response.data.access_token);
+      onLogin(); // Notify App of login
+      navigate("/profile"); // Redirect to profile
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
     }
   };
 
   return (
     <div className="flex h-screen">
-      {/* Left Section */}
       <div className="flex-1 flex flex-col justify-center px-12 py-8 bg-gradient-to-r from-blue-50 to-blue-100">
-        <h2 className="text-3xl font-bold mb-6 text-blue-800 text-center">تسجيل الدخول</h2>
+        <h2 className="text-3xl font-bold mb-6 text-blue-800 text-center">
+          تسجيل الدخول
+        </h2>
         <form onSubmit={handleLogin} className="space-y-4 max-w-md mx-auto">
           <div>
-            <label className="block text-blue-700 text-sm font-bold mb-2">البريد الإلكتروني:</label>
+            <label className="block text-blue-700 text-sm font-bold mb-2">
+              البريد الإلكتروني:
+            </label>
             <input
               type="email"
               placeholder="أدخل بريدك الإلكتروني"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 transition duration-300"
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
             />
           </div>
           <div className="relative">
-            <label className="block text-blue-700 text-sm font-bold mb-2">كلمة المرور:</label>
-            <div className="flex items-center border-2 border-gray-300 rounded-lg focus-within:border-blue-400 transition duration-300">
+            <label className="block text-blue-700 text-sm font-bold mb-2">
+              كلمة المرور:
+            </label>
+            <div className="flex items-center border-2 border-gray-300 rounded-lg">
               <button
                 type="button"
                 onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                className="px-4 py-2 text-blue-600 focus:outline-none"
+                className="px-4 py-2 text-blue-600"
               >
                 <img
                   src={isPasswordVisible ? EyeOpenIcon : EyeCloseIcon}
@@ -55,7 +63,7 @@ const Login = () => {
                 />
               </button>
               <input
-                type={isPasswordVisible ? 'text' : 'password'}
+                type={isPasswordVisible ? "text" : "password"}
                 placeholder="أدخل كلمة المرور"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -66,24 +74,12 @@ const Login = () => {
           </div>
           <button
             type="submit"
-            className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300"
+            className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             تسجيل الدخول
           </button>
         </form>
-
-        {/* Button for first-time visitors */}
-        <div className="mt-4 text-center">
-          <p className="text-sm text-blue-700">
-            أول مرة تزورنا؟{' '}
-            <a href="/signup" className="text-blue-600 hover:underline">
-              قم بالتسجيل في حساب جديد
-            </a>
-          </p>
-        </div>
       </div>
-
-      {/* Right Section */}
       <div className="flex-1 hidden lg:flex items-center justify-center bg-gradient-to-r from-blue-100 to-blue-200">
         <img src={LoginImage} alt="Login Illustration" className="w-3/4 h-auto" />
       </div>
