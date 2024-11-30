@@ -23,17 +23,20 @@ async def login(user: UserLogin):
     raise HTTPException(status_code=401, detail="Invalid credentials")
 
 # Helper function to extract user from JWT
-def get_current_user(token: str = Depends(decode_access_token)):
-    user_id = token["user_id"]
+def get_current_user(token: dict = Depends(decode_access_token)):
+    user_id = token.get("user_id")
+    if not user_id:
+        raise HTTPException(status_code=403, detail="Invalid token")
+    
     user = users_collection.find_one({"_id": ObjectId(user_id)})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+    
     return user
-
 # Get profile endpoint
 @router.get("/profile")
 async def get_profile(user=Depends(get_current_user)):
-    user_data = users_collection.find_one({"_id": ObjectId(user["user_id"])})
+    user_data = users_collection.find_one({"_id": user["_id"]})
     if not user_data:
         raise HTTPException(status_code=404, detail="المستخدم غير موجود")
     

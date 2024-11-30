@@ -42,12 +42,18 @@ def create_access_token(data: Dict[str, str], expires_delta: Optional[timedelta]
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-def decode_access_token(token: str) -> Dict:
-    """Decode and validate a JWT token."""
+def decode_access_token(token: str = Depends(oauth2_scheme)):
     try:
-        return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    except JWTError as e:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
+        print(f"Token received: {token}")  # Log the received token
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except JWTError:
+        raise HTTPException(
+            status_code=401, 
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     """Retrieve the current user from a valid JWT token."""
