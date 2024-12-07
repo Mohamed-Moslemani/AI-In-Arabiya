@@ -19,12 +19,15 @@ async def login(user: UserLogin):
     db_user = authenticate_user(user.email, user.password)
     if db_user:
         access_token = create_access_token({"user_id": str(db_user["_id"])})
+        print(f"Access token generated: {access_token}")  # Debugging
         return {"access_token": access_token}
     raise HTTPException(status_code=401, detail="Invalid credentials")
+
 
 # Helper function to extract user from JWT
 def get_current_user(token: dict = Depends(decode_access_token)):
     user_id = token.get("user_id")
+    print(f"Decoded user ID: {user_id}")  # Debugging line
     if not user_id:
         raise HTTPException(status_code=403, detail="Invalid token")
     
@@ -32,7 +35,10 @@ def get_current_user(token: dict = Depends(decode_access_token)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
+    user["_id"] = str(user["_id"])
     return user
+
+
 # Get profile endpoint
 @router.get("/profile")
 async def get_profile(user=Depends(get_current_user)):
@@ -51,5 +57,6 @@ async def update_profile(profile_data: UserProfileUpdate, user=Depends(get_curre
     if not updated_data:
         raise HTTPException(status_code=400, detail="لا توجد بيانات لتحديثها")
     
-    users_collection.update_one({"_id": ObjectId(user["user_id"])}, {"$set": updated_data})
+    # Use the string _id from the user dictionary
+    users_collection.update_one({"_id": ObjectId(user["_id"])}, {"$set": updated_data})
     return {"message": "تم تحديث الملف الشخصي بنجاح"}
