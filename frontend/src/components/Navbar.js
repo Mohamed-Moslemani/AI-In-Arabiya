@@ -19,12 +19,6 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
               {!isLoggedIn ? (
                 <>
                   <Link
-                    to="/"
-                    className="text-white hover:bg-blue-500 px-3 py-2 rounded-md text-sm font-medium"
-                  >
-                    الصفحة الرئيسية
-                  </Link>
-                  <Link
                     to="/login"
                     className="text-white hover:bg-blue-500 px-3 py-2 rounded-md text-sm font-medium"
                   >
@@ -51,6 +45,12 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
                   >
                     لوحة القيادة
                   </Link>
+                  <Link
+                    to="/algorithms"
+                    className="text-white hover:bg-blue-500 px-3 py-2 rounded-md text-sm font-medium"
+                  >
+                    محاكاة الخوارزميات
+                  </Link>
                   <button
                     onClick={onLogout}
                     className="text-white hover:bg-red-500 px-3 py-2 rounded-md text-sm font-medium"
@@ -66,5 +66,6 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
     </nav>
   );
 };
+
 
 export default Navbar;
