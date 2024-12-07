@@ -18,11 +18,25 @@ const Login = ({ onLogin }) => {
         email,
         password,
       });
-      localStorage.setItem("access_token", response.data.access_token);
-      onLogin(); // Notify App of login
-      navigate("/profile"); // Redirect to profile
+      const token = response.data.access_token;
+      console.log("Token received on login:", token); // Debugging
+
+      if (token) {
+        // Save the token in localStorage
+        localStorage.setItem("access_token", token);
+
+        // Update the parent component's state using onLogin
+        const userData = response.data.user; // Assuming user info is in the response
+        onLogin(token, userData);
+
+        console.log("Navigating to /profile");
+        navigate("/profile"); // Navigate to the correct profile page
+      } else {
+        throw new Error("Token is undefined or missing");
+      }
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Login error:", error.response?.data || error.message);
+      alert("خطأ في تسجيل الدخول. يرجى التحقق من البريد الإلكتروني أو كلمة المرور.");
     }
   };
 

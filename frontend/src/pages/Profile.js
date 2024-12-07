@@ -3,141 +3,159 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
-  const [userData, setUserData] = useState(null); // User data state
-  const [loading, setLoading] = useState(true); // Loading state for API
-  const [error, setError] = useState(null); // Error state for API
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  // Fetch user data on component mount
   useEffect(() => {
-    // Fetch user data from backend (replace with your API endpoint)
     const fetchUserData = async () => {
+      const accessToken = localStorage.getItem("access_token");
+
+      if (!accessToken) {
+        setError("يرجى تسجيل الدخول للوصول إلى ملفك الشخصي");
+        navigate("/login");
+        return;
+      }
+
       try {
         const response = await axios.get("http://localhost:8000/auth/profile", {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`, // Assuming you are using a token for auth
+            Authorization: `Bearer ${accessToken}`,
           },
         });
-        setUserData(response.data); // Store the user data in the state
-        setLoading(false); // Set loading to false once data is fetched
-      } catch (error) {
-        setError("Error loading user data");
-        setLoading(false); // Set loading to false on error
+        setUserData(response.data.profile);
+      } catch (err) {
+        if (axios.isAxiosError(err)) {
+          handleAxiosError(err);
+        } else {
+          setError("حدث خطأ غير متوقع. حاول مرة أخرى.");
+        }
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUserData();
-  }, []);
+  }, [navigate]);
 
+  // Handle Axios-specific errors
+  const handleAxiosError = (err) => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem("access_token");
+      setError("الجلسة انتهت. يرجى تسجيل الدخول مرة أخرى");
+      navigate("/login");
+    } else if (err.response?.status >= 500) {
+      setError("خطأ في الخادم. حاول مرة أخرى لاحقًا.");
+    } else {
+      setError(err.response?.data?.detail || "خطأ في تحميل البيانات.");
+    }
+  };
+
+  // Render a default value if the field is null or undefined
+  const renderValue = (value, defaultValue = "غير متوفر") => {
+    if (Array.isArray(value)) {
+      return value.length > 0 ? value.join(", ") : defaultValue;
+    }
+    return value !== undefined && value !== null ? value : defaultValue;
+  };
+
+  // Handle loading state
   if (loading) {
     return (
-      <div className="text-center py-10">
-        <p>جاري تحميل البيانات...</p>
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-lg text-blue-600">جاري تحميل البيانات...</p>
       </div>
     );
   }
 
+  // Handle error state
   if (error) {
     return (
-      <div className="text-center py-10">
-        <p className="text-red-500">{error}</p>
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-lg text-red-500">{error}</p>
       </div>
     );
   }
 
+  // Handle case when user data is missing
+  if (!userData) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-lg text-gray-500">لم يتم العثور على بيانات المستخدم</p>
+      </div>
+    );
+  }
+
+  // Render Profile Page
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-blue-800 text-center mb-6">
         مرحبا بك في ملفك الشخصي
       </h1>
 
-      {/* Profile Info Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-        {/* Left Side: Profile Info */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-semibold text-blue-700 mb-4">المعلومات الشخصية</h2>
-          <div className="space-y-4">
-            <div className="flex justify-between">
-              <span className="text-gray-600 font-medium">الاسم:</span>
-              <span className="text-blue-600">{userData.name}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 font-medium">العمر:</span>
-              <span className="text-blue-600">{userData.age} سنة</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 font-medium">البريد الإلكتروني:</span>
-              <span className="text-blue-600">{userData.email}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 font-medium">رقم الهاتف:</span>
-              <span className="text-blue-600">{userData.phone_number}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 font-medium">الجنس:</span>
-              <span className="text-blue-600">{userData.gender}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 font-medium">تاريخ الميلاد:</span>
-              <span className="text-blue-600">{userData.date_of_birth}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 font-medium">الدولة:</span>
-              <span className="text-blue-600">{userData.country}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 font-medium">المدينة:</span>
-              <span className="text-blue-600">{userData.city}</span>
-            </div>
-          </div>
-        </div>
+        {/* Personal Information Section */}
+        <ProfileSection
+          title="المعلومات الشخصية"
+          items={[
+            { label: "الاسم", value: userData.name },
+            { label: "العمر", value: `${userData.age} سنة` },
+            { label: "البريد الإلكتروني", value: userData.email },
+            { label: "رقم الهاتف", value: userData.phone_number },
+            { label: "الجنس", value: userData.gender },
+            { label: "تاريخ الميلاد", value: userData.date_of_birth },
+            { label: "الدولة", value: userData.country },
+            { label: "المدينة", value: userData.city },
+          ]}
+        />
 
-        {/* Right Side: Additional Info */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-semibold text-blue-700 mb-4">المزيد من المعلومات</h2>
-          <div className="space-y-4">
-            <div className="flex justify-between">
-              <span className="text-gray-600 font-medium">المستوى الدراسي:</span>
-              <span className="text-blue-600">{userData.study_level}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 font-medium">المهارات البرمجية:</span>
-              <span className="text-blue-600">{userData.programming_skills.join(", ")}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 font-medium">الاهتمامات:</span>
-              <span className="text-blue-600">{userData.interests.join(", ")}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 font-medium">أسلوب التعلم المفضل:</span>
-              <span className="text-blue-600">{userData.preferred_learning_style}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 font-medium">الروتين اليومي:</span>
-              <span className="text-blue-600">
-                ساعات العمل: {userData.daily_routine.working_hours}، ساعات الكمبيوتر: {userData.daily_routine.laptop_hours}، 
-                ساعات النشاط البدني: {userData.daily_routine.physical_activity_hours}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 font-medium">الأهداف:</span>
-              <span className="text-blue-600">{userData.goals}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 font-medium">التحديات:</span>
-              <span className="text-blue-600">{userData.challenges}</span>
-            </div>
-          </div>
-        </div>
+        {/* Additional Information Section */}
+        <ProfileSection
+          title="المزيد من المعلومات"
+          items={[
+            { label: "المستوى الدراسي", value: userData.study_level },
+            { label: "المهارات البرمجية", value: userData.programming_skills },
+            { label: "الاهتمامات", value: userData.interests },
+            { label: "أسلوب التعلم المفضل", value: userData.preferred_learning_style },
+            {
+              label: "الروتين اليومي",
+              value: `ساعات العمل: ${renderValue(userData.daily_routine?.working_hours, 0)}، 
+                      ساعات الكمبيوتر: ${renderValue(userData.daily_routine?.laptop_hours, 0)}، 
+                      ساعات النشاط البدني: ${renderValue(userData.daily_routine?.physical_activity_hours, 0)}`,
+            },
+            { label: "الأهداف", value: userData.goals },
+            { label: "التحديات", value: userData.challenges },
+          ]}
+        />
       </div>
 
-      {/* Update Button */}
       <div className="flex justify-center mt-6">
-        <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+        <button
+          onClick={() => navigate("/update-profile")}
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+        >
           تعديل الملف الشخصي
         </button>
       </div>
     </div>
   );
 };
+
+// Reusable Profile Section Component
+const ProfileSection = ({ title, items }) => (
+  <div className="bg-white p-6 rounded-lg shadow-md">
+    <h2 className="text-2xl font-semibold text-blue-700 mb-4">{title}</h2>
+    <div className="space-y-4">
+      {items.map((item, idx) => (
+        <div key={idx} className="flex justify-between">
+          <span className="text-gray-600 font-medium">{item.label}:</span>
+          <span className="text-blue-600">{item.value}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+);
 
 export default Profile;
