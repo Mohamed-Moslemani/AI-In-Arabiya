@@ -16,7 +16,7 @@ const Home = () => {
           ذكاء+ - منصة تعليمية مبتكرة
         </h1>
         <p className="text-2xl md:text-3xl text-blue-600 font-medium italic">
-          لأننا نؤمن بالتكنولوجيا كحقٍ أساسي لكل أفراد المُجتمع.
+          لأننا نؤمن بالذكاء الإصطناعي كحقٍ أساسي لكل أفراد المُجتمع.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-6 justify-center">
           <a
