@@ -7,8 +7,10 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import AlgorithmsPage from "./pages/Panels";
-import LinearRegressionPage from "./pages/LinearRegression"; // Import Linear Regression Page
+import LinearRegressionPage from "./pages/LinearRegression"; 
 import LogisticRegressionPage from "./pages/LogisticRegression"
+import SVMPage from "./pages/svms";
+
 // Create a wrapper component to handle navigation
 function AppRoutes({ isLoggedIn, userData, handleLogin, handleLogout }) {
   const navigate = useNavigate();
@@ -57,6 +59,8 @@ function AppRoutes({ isLoggedIn, userData, handleLogin, handleLogout }) {
           <Route path="/algorithms" element={<AlgorithmsPage />} />
           <Route path="/simulate/linear-regression" element={<LinearRegressionPage />} />
           <Route path="/simulate/logistic-regression" element={<LogisticRegressionPage />} />
+          <Route path="/simulate/svm" element={<SVMPage />} />
+
         </Routes>
       </main>
       <Footer />
