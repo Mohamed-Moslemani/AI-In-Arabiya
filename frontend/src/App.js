@@ -1,18 +1,72 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import { useNavigate } from "react-router-dom"; // Importing useNavigate inside the component
+import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
-import AlgorithmsPage from "./pages/Panels"; 
+import AlgorithmsPage from "./pages/Panels";
+import LinearRegressionPage from "./pages/LinearRegression"; // Import Linear Regression Page
+import LogisticRegressionPage from "./pages/LogisticRegression"
+// Create a wrapper component to handle navigation
+function AppRoutes({ isLoggedIn, userData, handleLogin, handleLogout }) {
+  const navigate = useNavigate();
+
+  const wrappedHandleLogout = () => {
+    handleLogout();
+    navigate("/");
+  };
+
+  return (
+    <>
+      <Navbar isLoggedIn={isLoggedIn} userData={userData} onLogout={wrappedHandleLogout} />
+      <main className="flex-grow pt-16">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route
+            path="/login"
+            element={
+              isLoggedIn ? (
+                <Navigate to="/profile" replace />
+              ) : (
+                <Login onLogin={handleLogin} />
+              )
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              isLoggedIn ? (
+                <Navigate to="/profile" replace />
+              ) : (
+                <Signup onSignup={handleLogin} />
+              )
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              isLoggedIn ? (
+                <Profile userData={userData} />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+          <Route path="/algorithms" element={<AlgorithmsPage />} />
+          <Route path="/simulate/linear-regression" element={<LinearRegressionPage />} />
+          <Route path="/simulate/logistic-regression" element={<LogisticRegressionPage />} />
+        </Routes>
+      </main>
+      <Footer />
+    </>
+  );
+}
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
-  const navigate = useNavigate(); // Now calling the hook inside the functional component
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -56,50 +110,17 @@ function App() {
     localStorage.removeItem("access_token");
     setUserData(null);
     setIsLoggedIn(false);
-    navigate("/"); // Redirect to home page
   };
 
   return (
     <Router>
       <div className="flex flex-col min-h-screen">
-        <Navbar isLoggedIn={isLoggedIn} userData={userData} onLogout={handleLogout} />
-        <main className="flex-grow pt-16">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="/login"
-              element={
-                isLoggedIn ? (
-                  <Navigate to="/profile" replace />
-                ) : (
-                  <Login onLogin={handleLogin} />
-                )
-              }
-            />
-            <Route
-              path="/signup"
-              element={
-                isLoggedIn ? (
-                  <Navigate to="/profile" replace />
-                ) : (
-                  <Signup onSignup={handleLogin} />
-                )
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                isLoggedIn ? (
-                  <Profile userData={userData} />
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
-            <Route path="/algorithms" element={<AlgorithmsPage />} /> 
-          </Routes>
-        </main>
-        <Footer />
+        <AppRoutes 
+          isLoggedIn={isLoggedIn}
+          userData={userData}
+          handleLogin={handleLogin}
+          handleLogout={handleLogout}
+        />
       </div>
     </Router>
   );
