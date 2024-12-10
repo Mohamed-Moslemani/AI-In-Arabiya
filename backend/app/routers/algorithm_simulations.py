@@ -6,6 +6,10 @@ from sklearn.datasets import make_blobs
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import export_graphviz
+import pydotplus
+import base64
+from io import BytesIO
 
 router = APIRouter()
 
@@ -124,7 +128,6 @@ class SVMParams(BaseModel):
     kernel: str = Field(..., example="linear")
     max_iter: int = Field(..., gt=0, le=1000, example=100)
 
-
 @router.post("/simulate/svm")
 async def simulate_svm(params: SVMParams):
     try:
@@ -144,10 +147,8 @@ async def simulate_svm(params: SVMParams):
 
         return {
             "support_vectors": svm_model.support_vectors_.tolist(),
-            "coefficients": svm_model.coef_.tolist() if params.kernel == "linear" else None,
-            "intercept": svm_model.intercept_.tolist(),
             "decision_boundary": {"xx": xx.tolist(), "yy": yy.tolist(), "Z": Z.tolist()},
-            "number_of_support_vectors": len(svm_model.support_vectors_),
+            "scatter_data": {"X": X.tolist(), "y": y.tolist()},
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -186,7 +187,6 @@ async def simulate_knn(params: KNNParams):
 class DecisionTreeParams(BaseModel):
     max_depth: int = Field(..., gt=0, le=10, example=3)
 
-
 @router.post("/simulate/decision-tree")
 async def simulate_decision_tree(params: DecisionTreeParams):
     try:
@@ -203,9 +203,27 @@ async def simulate_decision_tree(params: DecisionTreeParams):
         Z = dt_model.predict(np.c_[xx.ravel(), yy.ravel()])
         Z = Z.reshape(xx.shape)
 
+        # Export decision tree as a graph
+        dot_data = export_graphviz(
+            dt_model,
+            out_file=None,
+            feature_names=["Feature 1", "Feature 2"],
+            class_names=["Class 0", "Class 1"],
+            filled=True,
+            rounded=True,
+            special_characters=True,
+        )
+        graph = pydotplus.graph_from_dot_data(dot_data)
+        png_image = graph.create_png()
+
+        # Encode the PNG image to base64
+        image_base64 = base64.b64encode(png_image).decode("utf-8")
+
         return {
             "model_score": dt_model.score(X, y),
             "decision_boundary": {"xx": xx.tolist(), "yy": yy.tolist(), "Z": Z.tolist()},
+            "scatter_data": {"X": X.tolist(), "y": y.tolist()},
+            "tree_image": image_base64,
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
