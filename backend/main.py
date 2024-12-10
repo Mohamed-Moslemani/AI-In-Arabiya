@@ -14,7 +14,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
-app.include_router(algo_router, prefix="/algorithms", tags=["simulations"])
+app.include_router(algo_router, prefix="/simulate")
 
 @app.get("/")
 async def root():
