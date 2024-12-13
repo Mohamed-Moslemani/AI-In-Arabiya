@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import LinearRegressionImage from "../assets/images/bg.png";
-import LogisticRegressionImage from "../assets/images/linearregression.png";
+import LinearRegressionImage from "../assets/images/linearregression.png";
+import LogisticRegressionImage from "../assets/images/linearregression.png"; // Update as needed
 import SVMImage from "../assets/images/bg.png";
 import KNNImage from "../assets/images/bg.png";
 import DecisionTreeImage from "../assets/images/decisiontree.svg";
@@ -13,12 +13,12 @@ const AlgorithmsPage = () => {
     {
       name: "الانحدار الخطي",
       image: LinearRegressionImage,
-      route: "/simulate/linear-regression",
+      route: "/simulate/linear-regression", // Route for Linear Regression
     },
     {
       name: "الانحدار اللوجستي",
       image: LogisticRegressionImage,
-      route: "/simulate/logistic-regression",
+      route: "/simulate/logistic-regression", // Route for Logistic Regression
     },
     {
       name: "دعم آلات المتجهات (SVM)",
