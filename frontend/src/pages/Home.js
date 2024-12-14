@@ -3,6 +3,7 @@ import FallingArabicLetters from "../components/falling_letters";
 import { ReactComponent as AiNotesIcon } from "../assets/images/notes-svgrepo-com.svg";
 import { ReactComponent as AiAssistantIcon } from "../assets/images/robot-ai-svgrepo-com.svg";
 import { ReactComponent as TestsSimulationIcon } from "../assets/images/graph-and-people-svgrepo-com.svg";
+import { Typewriter } from "react-simple-typewriter";
 
 const Home = () => {
   return (
@@ -16,7 +17,19 @@ const Home = () => {
           ذكاء+ - منصة تعليمية مبتكرة
         </h1>
         <p className="text-2xl md:text-3xl text-blue-600 font-medium italic">
-          لأننا نؤمن بالذكاء الإصطناعي كحقٍ أساسي لكل أفراد المُجتمع.
+          <Typewriter
+            words={[
+              "لأننا نؤمن بالذكاء الإصطناعي كحقٍ أساسي لكل أفراد المُجتمع.",
+              "ابدأ رحلتك في تعلم الذكاء الاصطناعي الآن.",
+              "تعلم مفاهيم الذكاء الاصطناعي باللغة العربية بسهولة.",
+            ]}
+            loop={Infinity}
+            cursor
+            cursorStyle="|"
+            typeSpeed={70}
+            deleteSpeed={50}
+            delaySpeed={2000}
+          />
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-6 justify-center">
           <a
