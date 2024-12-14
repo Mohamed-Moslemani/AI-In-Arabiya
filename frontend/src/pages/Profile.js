@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { FaUserEdit, FaUserCircle } from "react-icons/fa";
+import { FaUserEdit, FaSave, FaUserCircle } from "react-icons/fa";
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedTab, setSelectedTab] = useState("personal"); // Added state for tab selection
+  const [selectedTab, setSelectedTab] = useState("personal");
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState({});
   const navigate = useNavigate();
 
   // Fetch user data on component mount
@@ -28,6 +30,7 @@ const Profile = () => {
           },
         });
         setUserData(response.data.profile);
+        setEditData(response.data.profile); // Initialize editData with fetched data
       } catch (err) {
         if (axios.isAxiosError(err)) {
           handleAxiosError(err);
@@ -52,6 +55,34 @@ const Profile = () => {
       setError("خطأ في الخادم. حاول مرة أخرى لاحقًا.");
     } else {
       setError(err.response?.data?.detail || "خطأ في تحميل البيانات.");
+    }
+  };
+
+  // Handle input changes for editing
+  const handleInputChange = (key, value) => {
+    setEditData({ ...editData, [key]: value });
+  };
+
+  // Save changes to the backend
+  const handleSaveChanges = async () => {
+    setLoading(true);
+    try {
+      const accessToken = localStorage.getItem("access_token");
+      await axios.put("http://localhost:8000/auth/profile", editData, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      setUserData(editData); // Update userData with edited data
+      setIsEditing(false);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        handleAxiosError(err);
+      } else {
+        setError("حدث خطأ أثناء حفظ التعديلات. حاول مرة أخرى.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,32 +124,24 @@ const Profile = () => {
   const profileImage = userData.avatar_url || "https://via.placeholder.com/150";
 
   const personalInfo = [
-    { label: "الاسم", value: userData.name },
-    { label: "العمر", value: `${renderValue(userData.age, "غير متوفر")} سنة` },
-    { label: "البريد الإلكتروني", value: userData.email },
-    { label: "رقم الهاتف", value: userData.phone_number },
-    { label: "الجنس", value: userData.gender },
-    { label: "تاريخ الميلاد", value: userData.date_of_birth },
-    { label: "الدولة", value: userData.country },
-    { label: "المدينة", value: userData.city },
+    { label: "الاسم", key: "name" },
+    { label: "العمر", key: "age" },
+    { label: "البريد الإلكتروني", key: "email" },
+    { label: "رقم الهاتف", key: "phone_number" },
+    { label: "الجنس", key: "gender" },
+    { label: "تاريخ الميلاد", key: "date_of_birth" },
+    { label: "الدولة", key: "country" },
+    { label: "المدينة", key: "city" },
   ];
 
   const additionalInfo = [
-    { label: "المستوى الدراسي", value: userData.study_level },
-    { label: "المهارات البرمجية", value: renderValue(userData.programming_skills) },
-    { label: "الاهتمامات", value: renderValue(userData.interests) },
-    {
-      label: "أسلوب التعلم المفضل",
-      value: userData.preferred_learning_style,
-    },
-    {
-      label: "الروتين اليومي",
-      value: `ساعات العمل: ${renderValue(userData.daily_routine?.working_hours, 0)}, 
-                      ساعات الكمبيوتر: ${renderValue(userData.daily_routine?.laptop_hours, 0)}, 
-                      ساعات النشاط البدني: ${renderValue(userData.daily_routine?.physical_activity_hours, 0)}`,
-    },
-    { label: "الأهداف", value: userData.goals },
-    { label: "التحديات", value: userData.challenges },
+    { label: "المستوى الدراسي", key: "study_level" },
+    { label: "المهارات البرمجية", key: "programming_skills" },
+    { label: "الاهتمامات", key: "interests" },
+    { label: "أسلوب التعلم المفضل", key: "preferred_learning_style" },
+    { label: "الروتين اليومي", key: "daily_routine" },
+    { label: "الأهداف", key: "goals" },
+    { label: "التحديات", key: "challenges" },
   ];
 
   return (
@@ -137,7 +160,7 @@ const Profile = () => {
             مرحبا {renderValue(userData.name, "")}!
           </h1>
           <p className="text-gray-700 text-sm md:text-base">
-            هنا يمكنك مراجعة وتعديل معلوماتك الشخصية ومعلوماتك الإضافية.
+            هنا يمكنك مراجعة وتعديل معلوماتك الشخصية.
           </p>
         </div>
       </div>
@@ -171,26 +194,38 @@ const Profile = () => {
         {selectedTab === "personal" && (
           <ProfileSection
             title="المعلومات الشخصية"
-            icon={<FaUserCircle className="text-blue-700" />}
             items={personalInfo}
+            isEditing={isEditing}
+            editData={editData}
+            handleInputChange={handleInputChange}
           />
         )}
         {selectedTab === "additional" && (
           <ProfileSection
             title="المزيد من المعلومات"
-            icon={<FaUserCircle className="text-blue-700" />}
             items={additionalInfo}
+            isEditing={isEditing}
+            editData={editData}
+            handleInputChange={handleInputChange}
           />
         )}
 
         <div className="flex justify-center mt-10">
-          <button
-            onClick={() => navigate("/update-profile")}
-            className="px-6 py-2 bg-blue-600 text-white rounded-full shadow-md hover:bg-blue-700 transition flex items-center gap-2"
-          >
-            <FaUserEdit />
-            تعديل الملف الشخصي
-          </button>
+          {isEditing ? (
+            <button
+              onClick={handleSaveChanges}
+              className="px-6 py-2 bg-green-600 text-white rounded-full shadow-md hover:bg-green-700 transition flex items-center gap-2"
+            >
+              <FaSave /> حفظ التعديلات
+            </button>
+          ) : (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="px-6 py-2 bg-blue-600 text-white rounded-full shadow-md hover:bg-blue-700 transition flex items-center gap-2"
+            >
+              <FaUserEdit /> تعديل الملف الشخصي
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -198,10 +233,9 @@ const Profile = () => {
 };
 
 // Reusable Profile Section Component
-const ProfileSection = ({ title, items, icon }) => (
+const ProfileSection = ({ title, items, isEditing, editData, handleInputChange }) => (
   <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition max-w-3xl mx-auto">
     <div className="flex items-center gap-2 mb-4 border-b border-blue-100 pb-2">
-      {icon}
       <h2 className="text-2xl font-semibold text-blue-700">{title}</h2>
     </div>
     <div className="space-y-4">
@@ -211,9 +245,18 @@ const ProfileSection = ({ title, items, icon }) => (
           className="flex justify-between items-center bg-blue-50 hover:bg-blue-100 rounded-md px-4 py-2 transition"
         >
           <span className="text-gray-700 font-medium">{item.label}:</span>
-          <span className="text-blue-700 font-semibold">
-            {item.value || "غير متوفر"}
-          </span>
+          {isEditing ? (
+            <input
+              type="text"
+              value={editData[item.key] || ""}
+              onChange={(e) => handleInputChange(item.key, e.target.value)}
+              className="border rounded-md px-2 py-1 text-blue-700"
+            />
+          ) : (
+            <span className="text-blue-700 font-semibold">
+              {editData[item.key] || "غير متوفر"}
+            </span>
+          )}
         </div>
       ))}
     </div>
