@@ -43,3 +43,4 @@ class UserProfileUpdate(BaseModel):
     )
     goals: Optional[str] = Field(None, example="الانتقال إلى مهنة في الذكاء الاصطناعي")
     challenges: Optional[str] = Field(None, example="إيجاد الوقت الكافي للدراسة")
+    exam_answers: Optional[List[dict]] = Field(None, example=[{"exam_id": "123", "answers": [{"question_id": "q1", "answer": "تعلم الآلة"}]}])
