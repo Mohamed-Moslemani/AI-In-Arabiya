@@ -11,6 +11,11 @@ import LinearRegressionPage from "./pages/LinearRegression";
 import LogisticRegressionPage from "./pages/LogisticRegression"
 import SVMPage from "./pages/svms";
 import DecisionTreePage from "./pages/decisiontree";
+import Notes from "./pages/Notes";
+import AIMathematics from "./pages/AIMathematics";
+import AIApplications from "./pages/AIApplications";
+import WhatIsAI from "./pages/WhatIdAI.js";
+import AIAlgorithms from "./pages/AIAlgorithms";
 
 // Create a wrapper component to handle navigation
 function AppRoutes({ isLoggedIn, userData, handleLogin, handleLogout }) {
@@ -62,7 +67,8 @@ function AppRoutes({ isLoggedIn, userData, handleLogin, handleLogout }) {
           <Route path="/simulate/logistic-regression" element={<LogisticRegressionPage />} />
           <Route path="/simulate/svm" element={<SVMPage />} />
           <Route path="/simulate/decision-tree" element={<DecisionTreePage />} />
-
+          <Route path="/notes" element={<Notes />} />
+ 
 
         </Routes>
       </main>
