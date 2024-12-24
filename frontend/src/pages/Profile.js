@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { FaUserEdit, FaSave, FaUserCircle } from "react-icons/fa";
+import { FaUserEdit, FaSave, FaSpinner } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
@@ -9,10 +12,11 @@ const Profile = () => {
   const [error, setError] = useState(null);
   const [selectedTab, setSelectedTab] = useState("personal");
   const [isEditing, setIsEditing] = useState(false);
+  const [isAvatarUploading, setIsAvatarUploading] = useState(false);
+  const [showChangePhoto, setShowChangePhoto] = useState(false);
   const [editData, setEditData] = useState({});
   const navigate = useNavigate();
 
-  // Fetch user data on component mount
   useEffect(() => {
     const fetchUserData = async () => {
       const accessToken = localStorage.getItem("access_token");
@@ -30,13 +34,9 @@ const Profile = () => {
           },
         });
         setUserData(response.data.profile);
-        setEditData(response.data.profile); // Initialize editData with fetched data
+        setEditData(response.data.profile);
       } catch (err) {
-        if (axios.isAxiosError(err)) {
-          handleAxiosError(err);
-        } else {
-          setError("حدث خطأ غير متوقع. حاول مرة أخرى.");
-        }
+        handleAxiosError(err);
       } finally {
         setLoading(false);
       }
@@ -45,12 +45,13 @@ const Profile = () => {
     fetchUserData();
   }, [navigate]);
 
-  // Handle Axios-specific errors
   const handleAxiosError = (err) => {
     if (err.response?.status === 401) {
       localStorage.removeItem("access_token");
       setError("الجلسة انتهت. يرجى تسجيل الدخول مرة أخرى");
       navigate("/login");
+    } else if (err.response?.status === 400) {
+      toast.error(err.response?.data?.detail || "خطأ في البيانات المدخلة.");
     } else if (err.response?.status >= 500) {
       setError("خطأ في الخادم. حاول مرة أخرى لاحقًا.");
     } else {
@@ -58,12 +59,10 @@ const Profile = () => {
     }
   };
 
-  // Handle input changes for editing
   const handleInputChange = (key, value) => {
     setEditData({ ...editData, [key]: value });
   };
 
-  // Save changes to the backend
   const handleSaveChanges = async () => {
     setLoading(true);
     try {
@@ -73,28 +72,47 @@ const Profile = () => {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      setUserData(editData); // Update userData with edited data
+      setUserData(editData);
       setIsEditing(false);
+      toast.success("تم حفظ التعديلات بنجاح!");
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        handleAxiosError(err);
-      } else {
-        setError("حدث خطأ أثناء حفظ التعديلات. حاول مرة أخرى.");
-      }
+      handleAxiosError(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Render a default value if the field is null or undefined
-  const renderValue = (value, defaultValue = "غير متوفر") => {
-    if (Array.isArray(value)) {
-      return value.length > 0 ? value.join(", ") : defaultValue;
+  const handleAvatarChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("avatar", file);
+
+    setIsAvatarUploading(true);
+    try {
+      const accessToken = localStorage.getItem("access_token");
+      const response = await axios.put(
+        "http://localhost:8000/auth/profile/avatar",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setUserData({ ...userData, avatar_url: response.data.avatar_url });
+      toast.success("تم تحديث الصورة الشخصية بنجاح!");
+    } catch (err) {
+      handleAxiosError(err);
+    } finally {
+      setIsAvatarUploading(false);
     }
-    return value !== undefined && value !== null ? value : defaultValue;
   };
 
-  // Handle loading state
+  const profileImage = userData?.avatar_url || "https://via.placeholder.com/150?text=No+Photo";
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-50">
@@ -103,7 +121,6 @@ const Profile = () => {
     );
   }
 
-  // Handle error state
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-50">
@@ -112,7 +129,6 @@ const Profile = () => {
     );
   }
 
-  // Handle case when user data is missing
   if (!userData) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-50">
@@ -120,8 +136,6 @@ const Profile = () => {
       </div>
     );
   }
-
-  const profileImage = userData.avatar_url || "https://via.placeholder.com/150";
 
   const personalInfo = [
     { label: "الاسم", key: "name" },
@@ -146,18 +160,47 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Top Section - Hero */}
+    <ToastContainer />
+
       <div className="bg-gradient-to-r from-blue-100 to-blue-200 py-10 px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="w-32 h-32 mx-auto rounded-full overflow-hidden mb-4 shadow-lg">
-            <img
-              src={profileImage}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
+          <div
+            className="relative w-32 h-32 mx-auto rounded-full overflow-hidden shadow-lg group"
+            onMouseEnter={() => setShowChangePhoto(true)}
+            onMouseLeave={() => setShowChangePhoto(false)}
+          >
+            {isAvatarUploading ? (
+              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <FaSpinner className="text-white animate-spin text-3xl" />
+              </div>
+            ) : (
+              <img
+                src={profileImage}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            )}
+            {!isAvatarUploading && showChangePhoto && (
+              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <label
+                  htmlFor="avatarInput"
+                  aria-label="Upload Profile Picture"
+                  className="text-white font-semibold cursor-pointer"
+                >
+                  تغيير الصورة
+                </label>
+                <input
+                  id="avatarInput"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarChange}
+                />
+              </div>
+            )}
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-blue-800 mb-2">
-            مرحبا {renderValue(userData.name, "")}!
+            مرحبا {userData.name || ""}!
           </h1>
           <p className="text-gray-700 text-sm md:text-base">
             هنا يمكنك مراجعة وتعديل معلوماتك الشخصية.
@@ -166,7 +209,6 @@ const Profile = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Tabs for switching info */}
         <div className="flex justify-center gap-4 mb-8">
           <button
             onClick={() => setSelectedTab("personal")}
@@ -190,7 +232,6 @@ const Profile = () => {
           </button>
         </div>
 
-        {/* Conditional Rendering Based on Selected Tab */}
         {selectedTab === "personal" && (
           <ProfileSection
             title="المعلومات الشخصية"
@@ -232,7 +273,6 @@ const Profile = () => {
   );
 };
 
-// Reusable Profile Section Component
 const ProfileSection = ({ title, items, isEditing, editData, handleInputChange }) => (
   <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition max-w-3xl mx-auto">
     <div className="flex items-center gap-2 mb-4 border-b border-blue-100 pb-2">
