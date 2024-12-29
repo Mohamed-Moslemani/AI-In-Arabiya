@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FaUserEdit, FaSave, FaSpinner } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
@@ -16,6 +15,34 @@ const Profile = () => {
   const [showChangePhoto, setShowChangePhoto] = useState(false);
   const [editData, setEditData] = useState({});
   const navigate = useNavigate();
+
+  const handleAxiosError = useCallback(
+    (err) => {
+      let message = "خطأ في تحميل البيانات.";
+      if (err?.response?.data?.detail) {
+        if (Array.isArray(err.response.data.detail)) {
+          message = err.response.data.detail.map((e) => e.msg || JSON.stringify(e)).join(" | ");
+        } else if (typeof err.response.data.detail === "object") {
+          message = JSON.stringify(err.response.data.detail);
+        } else {
+          message = err.response.data.detail;
+        }
+      }
+
+      if (err.response?.status === 401) {
+        localStorage.removeItem("access_token");
+        setError("الجلسة انتهت. يرجى تسجيل الدخول مرة أخرى");
+        navigate("/login");
+      } else if (err.response?.status === 400) {
+        toast.error(message || "خطأ في البيانات المدخلة.");
+      } else if (err.response?.status >= 500) {
+        setError("خطأ في الخادم. حاول مرة أخرى لاحقًا.");
+      } else {
+        setError(message);
+      }
+    },
+    [navigate]
+  );
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -43,21 +70,7 @@ const Profile = () => {
     };
 
     fetchUserData();
-  }, [navigate]);
-
-  const handleAxiosError = (err) => {
-    if (err.response?.status === 401) {
-      localStorage.removeItem("access_token");
-      setError("الجلسة انتهت. يرجى تسجيل الدخول مرة أخرى");
-      navigate("/login");
-    } else if (err.response?.status === 400) {
-      toast.error(err.response?.data?.detail || "خطأ في البيانات المدخلة.");
-    } else if (err.response?.status >= 500) {
-      setError("خطأ في الخادم. حاول مرة أخرى لاحقًا.");
-    } else {
-      setError(err.response?.data?.detail || "خطأ في تحميل البيانات.");
-    }
-  };
+  }, [navigate, handleAxiosError]);
 
   const handleInputChange = (key, value) => {
     setEditData({ ...editData, [key]: value });
@@ -87,7 +100,7 @@ const Profile = () => {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append("avatar", file);
+    formData.append("file", file);
 
     setIsAvatarUploading(true);
     try {
@@ -110,8 +123,6 @@ const Profile = () => {
       setIsAvatarUploading(false);
     }
   };
-
-  const profileImage = userData?.avatar_url || "https://via.placeholder.com/150?text=No+Photo";
 
   if (loading) {
     return (
@@ -160,8 +171,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-    <ToastContainer />
-
+      <ToastContainer />
       <div className="bg-gradient-to-r from-blue-100 to-blue-200 py-10 px-4">
         <div className="max-w-3xl mx-auto text-center">
           <div
@@ -175,7 +185,7 @@ const Profile = () => {
               </div>
             ) : (
               <img
-                src={profileImage}
+                src={userData?.avatar_url || "../assets/images/placeholder.png"}
                 alt="Profile"
                 className="w-full h-full object-cover"
               />
@@ -184,7 +194,6 @@ const Profile = () => {
               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                 <label
                   htmlFor="avatarInput"
-                  aria-label="Upload Profile Picture"
                   className="text-white font-semibold cursor-pointer"
                 >
                   تغيير الصورة
@@ -207,7 +216,6 @@ const Profile = () => {
           </p>
         </div>
       </div>
-
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex justify-center gap-4 mb-8">
           <button
@@ -231,7 +239,6 @@ const Profile = () => {
             المزيد من المعلومات
           </button>
         </div>
-
         {selectedTab === "personal" && (
           <ProfileSection
             title="المعلومات الشخصية"
@@ -250,7 +257,6 @@ const Profile = () => {
             handleInputChange={handleInputChange}
           />
         )}
-
         <div className="flex justify-center mt-10">
           {isEditing ? (
             <button
@@ -273,7 +279,13 @@ const Profile = () => {
   );
 };
 
-const ProfileSection = ({ title, items, isEditing, editData, handleInputChange }) => (
+const ProfileSection = ({
+  title,
+  items,
+  isEditing,
+  editData,
+  handleInputChange,
+}) => (
   <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition max-w-3xl mx-auto">
     <div className="flex items-center gap-2 mb-4 border-b border-blue-100 pb-2">
       <h2 className="text-2xl font-semibold text-blue-700">{title}</h2>
