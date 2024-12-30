@@ -18,7 +18,7 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
             to="/"
             className="text-white font-bold text-3xl hover:text-blue-200 transition duration-300"
           >
-            ذكاء+
+خوارزمياتك    
           </Link>
 
           {/* Desktop Links */}
