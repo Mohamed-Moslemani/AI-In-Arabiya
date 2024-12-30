@@ -4,6 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { FaUserEdit, FaSave, FaSpinner } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { CountryDropdown } from "react-country-region-selector";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
