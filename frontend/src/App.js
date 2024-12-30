@@ -16,6 +16,7 @@ import AIMathematics from "./pages/AIMathematics";
 import AIApplications from "./pages/AIApplications";
 import WhatIsAI from "./pages/WhatIdAI.js";
 import AIAlgorithms from "./pages/AIAlgorithms";
+import Dashboard from "./pages/Dashboard.js"
 
 // Create a wrapper component to handle navigation
 function AppRoutes({ isLoggedIn, userData, handleLogin, handleLogout }) {
@@ -29,6 +30,7 @@ function AppRoutes({ isLoggedIn, userData, handleLogin, handleLogout }) {
   return (
     <>
       <Navbar isLoggedIn={isLoggedIn} userData={userData} onLogout={wrappedHandleLogout} />
+      <div className="flex flex-col min-h-screen">
       <main className="flex-grow pt-16">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -68,11 +70,13 @@ function AppRoutes({ isLoggedIn, userData, handleLogin, handleLogout }) {
           <Route path="/simulate/svm" element={<SVMPage />} />
           <Route path="/simulate/decision-tree" element={<DecisionTreePage />} />
           <Route path="/notes" element={<Notes />} />
+          <Route path="/Dashboard" element={<Dashboard />} />
  
 
         </Routes>
       </main>
       <Footer />
+      </div>
     </>
   );
 }
