@@ -4,12 +4,76 @@ import { useNavigate } from "react-router-dom";
 import { FaUserEdit, FaSave, FaSpinner } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { CountryDropdown } from "react-country-region-selector";
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+// يمكنك استخدام مكتبات متعددة للاختيار من بين خيارات (MultiSelect) أو يمكنك كتابة
+// عنصر مخصص بنفسك. في هذا المثال سنستخدم Checkboxes لتبسيط الأمر.
+const programmingSkillsOptions = [
+  "JavaScript",
+  "Python",
+  "Java",
+  "C++",
+  "React",
+  "Angular",
+  "Vue.js",
+  "Node.js",
+  "Django",
+  "Flask",
+  "TensorFlow",
+  "PyTorch",
+  "Machine Learning",
+  "Data Science",
+  "Go",
+  "Rust",
+  "PHP",
+  "Laravel",
+  "Ruby on Rails",
+  // أضف ما تريد من مهارات برمجية ولغات وبيئات تطويرية ...
+];
+
+// البلدان العربية الـ 22 مع أعلامها كأمثلة
+const arabCountries = [
+  { value: "السعودية", label: "السعودية 🇸🇦" },
+  { value: "الإمارات", label: "الإمارات 🇦🇪" },
+  { value: "الكويت", label: "الكويت 🇰🇼" },
+  { value: "قطر", label: "قطر 🇶🇦" },
+  { value: "البحرين", label: "البحرين 🇧🇭" },
+  { value: "عمان", label: "عمان 🇴🇲" },
+  { value: "مصر", label: "مصر 🇪🇬" },
+  { value: "المغرب", label: "المغرب 🇲🇦" },
+  { value: "الجزائر", label: "الجزائر 🇩🇿" },
+  { value: "تونس", label: "تونس 🇹🇳" },
+  { value: "ليبيا", label: "ليبيا 🇱🇾" },
+  { value: "السودان", label: "السودان 🇸🇩" },
+  { value: "الأردن", label: "الأردن 🇯🇴" },
+  { value: "لبنان", label: "لبنان 🇱🇧" },
+  { value: "سوريا", label: "سوريا 🇸🇾" },
+  { value: "العراق", label: "العراق 🇮🇶" },
+  { value: "اليمن", label: "اليمن 🇾🇪" },
+  { value: "فلسطين", label: "فلسطين 🇵🇸" },
+  { value: "الصومال", label: "الصومال 🇸🇴" },
+  { value: "موريتانيا", label: "موريتانيا 🇲🇷" },
+  { value: "جيبوتي", label: "جيبوتي 🇩🇯" },
+  { value: "جزر القمر", label: "جزر القمر 🇰🇲" },
+];
+
+// الخيارات المتاحة لأسلوب التعلم المفضل
+const learningStyles = [
+  { value: "سمعي", label: "سمعي" },
+  { value: "بصري", label: "بصري" },
+  { value: "حسي حركي", label: "حسي حركي" },
+  { value: "قرائي", label: "قرائي" },
+];
+
+// الخيارات المتاحة للمستوى الدراسي
+const studyLevels = [
+  { value: "لا أدرس حاليا", label: "لا أدرس حاليا" },
+  { value: "مدرسة", label: "مدرسة" },
+  { value: "جامعة", label: "جامعة" },
+  { value: "ماجستير", label: "ماجستير" },
+  { value: "دكتوراه", label: "دكتوراه" },
+];
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
@@ -27,7 +91,9 @@ const Profile = () => {
       let message = "خطأ في تحميل البيانات.";
       if (err?.response?.data?.detail) {
         if (Array.isArray(err.response.data.detail)) {
-          message = err.response.data.detail.map((e) => e.msg || JSON.stringify(e)).join(" | ");
+          message = err.response.data.detail
+            .map((e) => e.msg || JSON.stringify(e))
+            .join(" | ");
         } else if (typeof err.response.data.detail === "object") {
           message = JSON.stringify(err.response.data.detail);
         } else {
@@ -154,25 +220,72 @@ const Profile = () => {
     );
   }
 
+  // تم إزالة حقل "العمر" بناء على الطلب
+  // جعل البريد الإلكتروني ورقم الهاتف غير قابلين للتعديل
+  // جعل الجنس خيارات
+  // جعل تاريخ الميلاد مختار من خلال تاريخ
+  // جعل الدولة من قائمة الدول العربية فقط
+  // وغير ذلك من التعديلات المطلوبة
+
   const personalInfo = [
-    { label: "الاسم", key: "name" },
-    { label: "العمر", key: "age" },
-    { label: "البريد الإلكتروني", key: "email" },
-    { label: "رقم الهاتف", key: "phone_number" },
-    { label: "الجنس", key: "gender" },
-    { label: "تاريخ الميلاد", key: "date_of_birth" },
-    { label: "الدولة", key: "country" },
-    { label: "المدينة", key: "city" },
+    { label: "الاسم", key: "name", type: "text" },
+    {
+      label: "البريد الإلكتروني",
+      key: "email",
+      type: "email",
+      editable: false, // لجعله غير قابل للتعديل
+    },
+    {
+      label: "رقم الهاتف",
+      key: "phone_number",
+      type: "text",
+      editable: false, // لجعله غير قابل للتعديل
+    },
+    {
+      label: "الجنس",
+      key: "gender",
+      type: "select",
+      options: [
+        { value: "ذكر", label: "ذكر" },
+        { value: "أنثى", label: "أنثى" },
+      ],
+    },
+    {
+      label: "تاريخ الميلاد",
+      key: "date_of_birth",
+      type: "date",
+    },
+    {
+      label: "الدولة",
+      key: "country",
+      type: "select",
+      options: arabCountries, // قائمة الدول العربية
+    },
+    { label: "المدينة", key: "city", type: "text" },
   ];
 
+  // تم إزالة "الروتين اليومي" و "التحديات" بناء على الطلب
   const additionalInfo = [
-    { label: "المستوى الدراسي", key: "study_level" },
-    { label: "المهارات البرمجية", key: "programming_skills" },
-    { label: "الاهتمامات", key: "interests" },
-    { label: "أسلوب التعلم المفضل", key: "preferred_learning_style" },
-    { label: "الروتين اليومي", key: "daily_routine" },
-    { label: "الأهداف", key: "goals" },
-    { label: "التحديات", key: "challenges" },
+    {
+      label: "المستوى الدراسي",
+      key: "study_level",
+      type: "select",
+      options: studyLevels,
+    },
+    {
+      label: "المهارات البرمجية",
+      key: "programming_skills",
+      type: "multiselect",
+      options: programmingSkillsOptions,
+    },
+    { label: "الاهتمامات", key: "interests", type: "text" },
+    {
+      label: "أسلوب التعلم المفضل",
+      key: "preferred_learning_style",
+      type: "select",
+      options: learningStyles,
+    },
+    { label: "الأهداف", key: "goals", type: "text" },
   ];
 
   return (
@@ -291,34 +404,185 @@ const ProfileSection = ({
   isEditing,
   editData,
   handleInputChange,
-}) => (
-  <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition max-w-3xl mx-auto">
-    <div className="flex items-center gap-2 mb-4 border-b border-blue-100 pb-2">
-      <h2 className="text-2xl font-semibold text-blue-700">{title}</h2>
+}) => {
+  // دالة لمساعدة اختيار/إلغاء اختيار المهارات
+  const handleSkillToggle = (skill) => {
+    const currentSkills = Array.isArray(editData.programming_skills)
+      ? editData.programming_skills
+      : [];
+    if (currentSkills.includes(skill)) {
+      // إزالة المهارة إن كانت محددة
+      handleInputChange(
+        "programming_skills",
+        currentSkills.filter((s) => s !== skill)
+      );
+    } else {
+      // إضافتها إن لم تكن موجودة
+      handleInputChange("programming_skills", [...currentSkills, skill]);
+    }
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition max-w-3xl mx-auto">
+      <div className="flex items-center gap-2 mb-4 border-b border-blue-100 pb-2">
+        <h2 className="text-2xl font-semibold text-blue-700">{title}</h2>
+      </div>
+      <div className="space-y-4">
+        {items.map((item, idx) => {
+          // إذا كان الحقل غير قابل للتعديل (مثل البريد الإلكتروني أو رقم الهاتف)
+          if (!isEditing || item.editable === false) {
+            // في حالة البريد/الهاتف وإحنا في حالة تعديل، نظهره كنص فقط
+            // أما إذا كنا في حالة عرض عادية بدون تعديل فنتابع عادي
+            if (item.type === "multiselect") {
+              // عرض المهارات إن وجدت
+              const skills = Array.isArray(editData[item.key])
+                ? editData[item.key]
+                : [];
+              return (
+                <div
+                  key={idx}
+                  className="flex flex-col md:flex-row md:justify-between md:items-center bg-blue-50 hover:bg-blue-100 rounded-md px-4 py-2 transition"
+                >
+                  <span className="text-gray-700 font-medium mb-1 md:mb-0">
+                    {item.label}:
+                  </span>
+                  <span className="text-blue-700 font-semibold">
+                    {skills.length
+                      ? skills.join("، ")
+                      : "لم يتم اختيار مهارات بعد"}
+                  </span>
+                </div>
+              );
+            }
+
+            return (
+              <div
+                key={idx}
+                className="flex flex-col md:flex-row md:justify-between md:items-center bg-blue-50 hover:bg-blue-100 rounded-md px-4 py-2 transition"
+              >
+                <span className="text-gray-700 font-medium mb-1 md:mb-0">
+                  {item.label}:
+                </span>
+                {/* إذا كان تاريخ ميلاد و موجودة قيمة، نظهرها بصيغة نصية مناسبة */}
+                {item.type === "date" && editData[item.key] ? (
+                  <span className="text-blue-700 font-semibold">
+                    {new Date(editData[item.key]).toLocaleDateString("en-GB")}
+                  </span>
+                ) : (
+                  <span className="text-blue-700 font-semibold">
+                    {editData[item.key] || "غير متوفر"}
+                  </span>
+                )}
+              </div>
+            );
+          }
+
+          // في حالة التحرير:
+          switch (item.type) {
+            case "text":
+              return (
+                <div
+                  key={idx}
+                  className="flex flex-col md:flex-row md:justify-between md:items-center bg-blue-50 hover:bg-blue-100 rounded-md px-4 py-2 transition"
+                >
+                  <span className="text-gray-700 font-medium mb-1 md:mb-0">
+                    {item.label}:
+                  </span>
+                  <input
+                    type="text"
+                    value={editData[item.key] || ""}
+                    onChange={(e) => handleInputChange(item.key, e.target.value)}
+                    className="border rounded-md px-2 py-1 text-blue-700"
+                  />
+                </div>
+              );
+            case "email":
+              // البريد الإلكتروني غير قابل للتعديل، لكن لو وصلنا هنا خطأ نمنعه anyway
+              return null;
+            case "select":
+              return (
+                <div
+                  key={idx}
+                  className="flex flex-col md:flex-row md:justify-between md:items-center bg-blue-50 hover:bg-blue-100 rounded-md px-4 py-2 transition"
+                >
+                  <span className="text-gray-700 font-medium mb-1 md:mb-0">
+                    {item.label}:
+                  </span>
+                  <select
+                    value={editData[item.key] || ""}
+                    onChange={(e) => handleInputChange(item.key, e.target.value)}
+                    className="border rounded-md px-2 py-1 text-blue-700"
+                  >
+                    <option value="">اختر من القائمة</option>
+                    {item.options.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              );
+            case "date":
+              return (
+                <div
+                  key={idx}
+                  className="flex flex-col md:flex-row md:justify-between md:items-center bg-blue-50 hover:bg-blue-100 rounded-md px-4 py-2 transition"
+                >
+                  <span className="text-gray-700 font-medium mb-1 md:mb-0">
+                    {item.label}:
+                  </span>
+                  <DatePicker
+                    selected={
+                      editData[item.key] ? new Date(editData[item.key]) : null
+                    }
+                    onChange={(date) => handleInputChange(item.key, date)}
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="اختر تاريخ الميلاد"
+                    className="border rounded-md px-2 py-1 text-blue-700"
+                  />
+                </div>
+              );
+            case "multiselect":
+              // سنستخدم Checkboxes هنا
+              return (
+                <div
+                  key={idx}
+                  className="bg-blue-50 hover:bg-blue-100 rounded-md px-4 py-2 transition"
+                >
+                  <span className="text-gray-700 font-medium">
+                    {item.label}:
+                  </span>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {item.options.map((skill) => {
+                      const currentSkills = Array.isArray(editData[item.key])
+                        ? editData[item.key]
+                        : [];
+                      const isSelected = currentSkills.includes(skill);
+                      return (
+                        <label
+                          key={skill}
+                          className="inline-flex items-center cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => handleSkillToggle(skill)}
+                            className="mr-1"
+                          />
+                          <span>{skill}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            default:
+              return null;
+          }
+        })}
+      </div>
     </div>
-    <div className="space-y-4">
-      {items.map((item, idx) => (
-        <div
-          key={idx}
-          className="flex justify-between items-center bg-blue-50 hover:bg-blue-100 rounded-md px-4 py-2 transition"
-        >
-          <span className="text-gray-700 font-medium">{item.label}:</span>
-          {isEditing ? (
-            <input
-              type="text"
-              value={editData[item.key] || ""}
-              onChange={(e) => handleInputChange(item.key, e.target.value)}
-              className="border rounded-md px-2 py-1 text-blue-700"
-            />
-          ) : (
-            <span className="text-blue-700 font-semibold">
-              {editData[item.key] || "غير متوفر"}
-            </span>
-          )}
-        </div>
-      ))}
-    </div>
-  </div>
-);
+  );
+};
 
 export default Profile;
