@@ -4,8 +4,7 @@ const arabicLetters = [
   'ا', 'آ', 'أ', 'إ', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 
   'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 
   'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن', 'ه', 'و', 
-  'ي', 'ى', 'ة', 'ؤ', 'ئ'
-];
+  'ي', 'ى', 'ة', 'ؤ', 'ئ', '١','٢' ,"٣", "٤", "٥", "٦", "٧", "٨", "٩"];
 
 const FallingArabicLetters = () => {
   const [letters, setLetters] = useState([]);
@@ -17,7 +16,7 @@ const FallingArabicLetters = () => {
         letter: arabicLetters[Math.floor(Math.random() * arabicLetters.length)],
         left: Math.random() * 100,
         top: -50,
-        animationDuration: Math.random() * 10 + 5, // 5-15 seconds
+        animationDuration: Math.random() * 5 + 5, // 5-15 seconds
         size: Math.random() * 30 + 15, // 15-45px
         delay: Math.random() * 10, // 0-10 seconds delay
         opacity: Math.random() * 0.3 + 0.1, // 0.1-0.4 opacity
