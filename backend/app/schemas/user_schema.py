@@ -23,11 +23,9 @@ class UserSignup(BaseModel):
     password: str = Field(..., example="secure_password")
     avatar_url: Optional[str] = Field(None, example="https://example.com/photo.jpg")
 
-
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
-
 
 class UserProfileUpdate(BaseModel):
     photo_url: Optional[str] = Field(None, example="https://example.com/photo.jpg")
