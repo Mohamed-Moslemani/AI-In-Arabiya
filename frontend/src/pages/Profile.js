@@ -7,29 +7,54 @@ import "react-toastify/dist/ReactToastify.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-// يمكنك استخدام مكتبات متعددة للاختيار من بين خيارات (MultiSelect) أو يمكنك كتابة
-// عنصر مخصص بنفسك. في هذا المثال سنستخدم Checkboxes لتبسيط الأمر.
 const programmingSkillsOptions = [
-  "JavaScript",
+  "TensorFlow",
+  "PyTorch",
+  "Keras",
+  "Scikit-learn",
+  "Hugging Face",
+  "OpenCV",
+  "Spacy",
+  "NLTK",
+  "Apache Spark MLlib",
+  "H2O.ai",
+  "ONNX",
+  "MXNet",
+  "LightGBM",
+  "XGBoost",
+  "CatBoost",
+  "RapidMiner",
+  "MATLAB",
+  "IBM Watson",
+  "Google Cloud AI",
+  "AWS SageMaker",
+  "Azure Machine Learning",
   "Python",
   "Java",
   "C++",
-  "React",
-  "Angular",
-  "Vue.js",
-  "Node.js",
-  "Django",
-  "Flask",
-  "TensorFlow",
-  "PyTorch",
-  "Machine Learning",
-  "Data Science",
+  "C#",
   "Go",
   "Rust",
   "PHP",
+  "Ruby",
+  "TypeScript",
+  "Node.js",
+  "React",
+  "Angular",
+  "Vue.js",
+  "Django",
+  "Flask",
   "Laravel",
   "Ruby on Rails",
-  // أضف ما تريد من مهارات برمجية ولغات وبيئات تطويرية ...
+  "Spring Boot",
+  ".NET",
+  "PostgreSQL",
+  "MySQL",
+  "MongoDB",
+  "GraphQL",
+  "Docker",
+  "Kubernetes",
+  "Git",
 ];
 
 // البلدان العربية الـ 22 مع أعلامها كأمثلة
@@ -435,7 +460,7 @@ const ProfileSection = ({
                   </span>
                   <span className="text-blue-700 font-semibold">
                     {skills.length
-                      ? skills.join("، ")
+                      ? skills.join(", ")
                       : "لم يتم اختيار مهارات بعد"}
                   </span>
                 </div>
@@ -527,40 +552,43 @@ const ProfileSection = ({
                   />
                 </div>
               );
-            case "multiselect":
-              // سنستخدم Checkboxes هنا
-              return (
-                <div
-                  key={idx}
-                  className="bg-blue-50 hover:bg-blue-100 rounded-md px-4 py-2 transition"
-                >
-                  <span className="text-gray-700 font-medium">
-                    {item.label}:
-                  </span>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {item.options.map((skill) => {
-                      const currentSkills = Array.isArray(editData[item.key])
-                        ? editData[item.key]
-                        : [];
-                      const isSelected = currentSkills.includes(skill);
-                      return (
-                        <label
-                          key={skill}
-                          className="inline-flex items-center cursor-pointer"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => handleSkillToggle(skill)}
-                            className="mr-1"
-                          />
-                          <span>{skill}</span>
-                        </label>
-                      );
-                    })}
+              case "multiselect":
+                // Chips-style toggle
+                return (
+                  <div
+                    key={idx}
+                    className="bg-blue-50 hover:bg-blue-100 rounded-md px-4 py-2 transition"
+                  >
+                    <span className="text-gray-700 font-medium">
+                      {item.label}:
+                    </span>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {item.options.map((skill) => {
+                        const currentSkills = Array.isArray(editData[item.key])
+                          ? editData[item.key]
+                          : [];
+                        const isSelected = currentSkills.includes(skill);
+              
+                        return (
+                          <span
+                            key={skill}
+                            onClick={() => handleSkillToggle(skill)}
+                            className={`px-3 py-1 rounded-full cursor-pointer transition
+                              ${
+                                isSelected
+                                  ? "bg-blue-600 text-white"
+                                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                              }
+                            `}
+                          >
+                            {skill}
+                          </span>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              );
+                );
+              
             default:
               return null;
           }
