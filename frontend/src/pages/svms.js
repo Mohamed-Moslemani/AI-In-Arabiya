@@ -91,42 +91,60 @@ const SVMPage = () => {
                 </div>
               ) : plotData ? (
                 <>
-                  <Plot
-                    data={[
-                      {
-                        x: plotData.scatter_data.X.map((p) => p[0]),
-                        y: plotData.scatter_data.X.map((p) => p[1]),
-                        mode: "markers",
-                        marker: {
-                          color: plotData.scatter_data.y,
-                          colorscale: "Viridis",
-                          size: 8,
-                        },
-                        name: "Data Points",
-                      },
-                      {
-                        x: plotData.support_vectors.map((p) => p[0]),
-                        y: plotData.support_vectors.map((p) => p[1]),
-                        mode: "markers",
-                        marker: { color: "red", symbol: "x", size: 10 },
-                        name: "Support Vectors",
-                      },
-                    ]}
-                    layout={{
-                      title: "النقاط وخط الفصل",
-                      xaxis: { title: "X1" },
-                      yaxis: { title: "X2" },
-                      margin: { t: 50, l: 50, r: 50, b: 50 },
-                      shapes: [
-                        {
-                          type: "contour",
-                          x0: plotData.decision_boundary.xx[0][0],
-                          x1: plotData.decision_boundary.xx[0][1],
-                          line: { color: "blue", width: 2 },
-                        },
-                      ],
-                    }}
-                  />
+            <Plot
+              data={[
+                // 1) Contour trace for the decision boundary & margins
+                {
+                  x: plotData.decision_boundary.xx[0],
+                  y: plotData.decision_boundary.yy.map((row) => row[0]),
+                  z: plotData.decision_boundary.Z,
+                  type: "contour",
+                  colorscale: "RdBu",
+                  autocontour: false,
+                  contours: {
+                    start: -1, // begin contour at -1
+                    end: 1,    // end contour at +1
+                    size: 1,   
+                    showlines: true,
+                    coloring: "fill",
+                  },
+                  opacity: 0.5,
+                  hoverinfo: "none",
+                  name: "Decision Region",
+                },
+                // 2) Scatter trace for data points
+                {
+                  x: plotData.scatter_data.X.map((p) => p[0]),
+                  y: plotData.scatter_data.X.map((p) => p[1]),
+                  mode: "markers",
+                  marker: {
+                    color: plotData.scatter_data.y,
+                    colorscale: "Viridis",
+                    size: 8,
+                  },
+                  name: "Data Points",
+                },
+                // 3) Scatter trace for support vectors
+                {
+                  x: plotData.support_vectors.map((p) => p[0]),
+                  y: plotData.support_vectors.map((p) => p[1]),
+                  mode: "markers",
+                  marker: {
+                    color: "red",
+                    symbol: "x",
+                    size: 10,
+                  },
+                  name: "Support Vectors",
+                },
+              ]}
+              layout={{
+                title: "النقاط وخط الفصل (Decision Boundary)",
+                xaxis: { title: "X1" },
+                yaxis: { title: "X2" },
+                margin: { t: 50, l: 50, r: 50, b: 50 },
+              }}
+            />
+
                 </>
               ) : (
                 <p className="text-blue-600 font-bold text-center">
