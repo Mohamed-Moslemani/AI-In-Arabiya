@@ -18,9 +18,11 @@ class UserSignup(BaseModel):
         None,
         example={"working_hours": 8, "laptop_hours": 5, "physical_activity_hours": 1},
     )
-    goals: str = Field(..., example="تعلم الذكاء الاصطناعي لتحسين الوظائف")
+    goals: Optional[str] = Field(None, example="تعلم الذكاء الاصطناعي لتحسين الوظائف")
     challenges: Optional[str] = Field(None, example="إيجاد الوقت الكافي للدراسة")
     password: str = Field(..., example="secure_password")
+    confirm_password: str = Field(..., example="Retype Password")
+
     avatar_url: Optional[str] = Field(None, example="https://example.com/photo.jpg")
 
 class UserLogin(BaseModel):
