@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Plot from "react-plotly.js";
 
 const DecisionTreePage = () => {
-  const [maxDepth, setMaxDepth] = useState(3); // Max depth of the tree
+  const [maxDepth, setMaxDepth] = useState(3);
   const [plotData, setPlotData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSimulate = async () => {
+  // Auto-refetch whenever maxDepth changes
+  useEffect(() => {
+    fetchSimulation();
+  }, [maxDepth]);
+
+  const fetchSimulation = async () => {
     setLoading(true);
     try {
       const response = await fetch("http://localhost:8000/simulate/decision-tree", {
@@ -18,13 +23,13 @@ const DecisionTreePage = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Simulation failed");
+        throw new Error("Decision Tree simulation failed");
       }
 
       const result = await response.json();
       setPlotData(result);
     } catch (error) {
-      console.error("Simulation failed:", error);
+      console.error("Decision Tree simulation failed:", error);
     } finally {
       setLoading(false);
     }
@@ -38,34 +43,64 @@ const DecisionTreePage = () => {
         </h1>
         <div className="bg-white shadow-lg rounded-lg p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Left Column: slider for max_depth */}
             <div>
               <label className="block mb-4">
-                <span className="text-blue-600 font-bold">العمق الأقصى:</span>
-                <input
-                  type="number"
-                  value={maxDepth}
-                  onChange={(e) => setMaxDepth(parseInt(e.target.value))}
-                  className="w-full border-blue-300 rounded-lg shadow-sm focus:ring focus:ring-blue-200"
-                  step="1"
-                />
-              </label>
-              <button
-                onClick={handleSimulate}
-                className="bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition"
-                disabled={loading}
-              >
-                {loading ? "جارٍ التشغيل..." : "ابدأ المحاكاة"}
-              </button>
-            </div>
-            <div>
-              {loading ? (
-                <div className="flex items-center justify-center h-full">
-                  <div className="loader ease-linear rounded-full border-8 border-t-8 border-blue-600 h-16 w-16"></div>
+                <span className="text-blue-600 font-bold">العمق الأقصى (max_depth):</span>
+                <div className="flex items-center space-x-2 mt-2">
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    step="1"
+                    value={maxDepth}
+                    onChange={(e) => setMaxDepth(parseInt(e.target.value))}
+                    className="w-full"
+                  />
+                  <span className="text-blue-800 font-semibold">
+                    {maxDepth}
+                  </span>
                 </div>
-              ) : plotData ? (
+              </label>
+
+              {/* Loading Indicator */}
+              {loading && (
+                <p className="text-blue-500 font-semibold">
+                  جارٍ حساب النتائج...
+                </p>
+              )}
+
+              {plotData && (
+                <p className="text-green-600 font-bold mt-4">
+                  دقة النموذج: {plotData.model_score.toFixed(2)}
+                </p>
+              )}
+            </div>
+
+            {/* Right Column: Plot & Tree Image */}
+            <div>
+              {plotData ? (
                 <>
+                  {/* Decision Boundary Plot */}
                   <Plot
                     data={[
+                      // 1) Contour for predicted classes
+                      {
+                        x: plotData.decision_boundary.xx[0],
+                        y: plotData.decision_boundary.yy.map((row) => row[0]),
+                        z: plotData.decision_boundary.Z,
+                        type: "contour",
+                        showscale: false,
+                        colorscale: "RdBu",
+                        contours: {
+                          coloring: "fill",
+                          showlines: false,
+                        },
+                        opacity: 0.5,
+                        hoverinfo: "none",
+                        name: "Decision Regions",
+                      },
+                      // 2) Optionally add scatter_data
                       {
                         x: plotData.scatter_data.X.map((p) => p[0]),
                         y: plotData.scatter_data.X.map((p) => p[1]),
@@ -77,39 +112,32 @@ const DecisionTreePage = () => {
                         },
                         name: "Data Points",
                       },
-                      {
-                        x: plotData.decision_boundary.xx.flat(),
-                        y: plotData.decision_boundary.yy.flat(),
-                        z: plotData.decision_boundary.Z.flat(),
-                        type: "contour",
-                        colorscale: "Blues",
-                        name: "Decision Boundary",
-                      },
                     ]}
                     layout={{
-                      title: "النقاط وخط الفصل",
+                      title: "خط الفصل لشجرة القرار",
                       xaxis: { title: "X1" },
                       yaxis: { title: "X2" },
                       margin: { t: 50, l: 50, r: 50, b: 50 },
                     }}
+                    style={{ width: "100%", height: "400px" }}
+                    config={{ displayModeBar: true, responsive: true }}
                   />
-                  <div className="text-center mt-4">
-                    <p className="text-blue-600 font-bold">
-                      دقة النموذج: {plotData.model_score.toFixed(2)}
-                    </p>
+
+                  {/* Decision Tree as an Image (Base64) */}
+                  <div className="mt-4">
+                    <h3 className="text-blue-600 font-semibold mb-2">
+                      تمثيل شجرة القرار:
+                    </h3>
+                    <img
+                      src={`data:image/png;base64,${plotData.tree_image}`}
+                      alt="Decision Tree Graph"
+                      style={{ maxWidth: "100%", border: "1px solid #ccc" }}
+                    />
                   </div>
-                  <h2 className="text-xl font-bold text-blue-600 text-center my-4">
-                    هيكل شجرة القرار
-                  </h2>
-                  <img
-                    src={`data:image/png;base64,${plotData.tree_image}`}
-                    alt="Decision Tree Visualization"
-                    className="mx-auto rounded-lg shadow-md"
-                  />
                 </>
               ) : (
                 <p className="text-blue-600 font-bold text-center">
-                  ابدأ المحاكاة لرؤية النتائج.
+                  حرّك المؤشر لرؤية النتائج.
                 </p>
               )}
             </div>
