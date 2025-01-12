@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Plot from "react-plotly.js";
 
 const SVMPage = () => {
-  const [C, setC] = useState(1.0); // Regularization parameter
+  const [C, setC] = useState(1.0);         // Regularization parameter
   const [kernel, setKernel] = useState("linear"); // Kernel type
-  const [maxIter, setMaxIter] = useState(100); // Max iterations
+  const [maxIter, setMaxIter] = useState(100);    // Max iterations
   const [plotData, setPlotData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSimulate = async () => {
+  // Automatically refetch whenever these dependencies change:
+  useEffect(() => {
+    fetchSimulation();
+  }, [C, kernel, maxIter]);
+
+  const fetchSimulation = async () => {
     setLoading(true);
     try {
       const response = await fetch("http://localhost:8000/simulate/svm", {
@@ -40,19 +45,31 @@ const SVMPage = () => {
         <h1 className="text-4xl md:text-6xl font-extrabold text-center text-blue-700 mb-8">
           محاكاة دعم آلات المتجهات (SVM)
         </h1>
+
         <div className="bg-white shadow-lg rounded-lg p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Left Column: Sliders & Kernel Selection */}
             <div>
+              {/* Slider for C */}
               <label className="block mb-4">
                 <span className="text-blue-600 font-bold">معامل التنظيم (C):</span>
-                <input
-                  type="number"
-                  value={C}
-                  onChange={(e) => setC(parseFloat(e.target.value))}
-                  className="w-full border-blue-300 rounded-lg shadow-sm focus:ring focus:ring-blue-200"
-                  step="0.1"
-                />
+                <div className="flex items-center space-x-2 mt-2">
+                  <input
+                    type="range"
+                    min="0.1"
+                    max="10.0"
+                    step="0.1"
+                    value={C}
+                    onChange={(e) => setC(parseFloat(e.target.value))}
+                    className="w-full"
+                  />
+                  <span className="text-blue-800 font-semibold">
+                    {C.toFixed(1)}
+                  </span>
+                </div>
               </label>
+
+              {/* Select for Kernel Type */}
               <label className="block mb-4">
                 <span className="text-blue-600 font-bold">نوع النواة:</span>
                 <select
@@ -66,89 +83,93 @@ const SVMPage = () => {
                   <option value="sigmoid">Sigmoid</option>
                 </select>
               </label>
+
+              {/* Slider for maxIter */}
               <label className="block mb-4">
                 <span className="text-blue-600 font-bold">عدد التكرارات القصوى:</span>
-                <input
-                  type="number"
-                  value={maxIter}
-                  onChange={(e) => setMaxIter(parseInt(e.target.value))}
-                  className="w-full border-blue-300 rounded-lg shadow-sm focus:ring focus:ring-blue-200"
-                  step="1"
-                />
-              </label>
-              <button
-                onClick={handleSimulate}
-                className="bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition"
-                disabled={loading}
-              >
-                {loading ? "جارٍ التشغيل..." : "ابدأ المحاكاة"}
-              </button>
-            </div>
-            <div>
-              {loading ? (
-                <div className="flex items-center justify-center h-full">
-                  <div className="loader ease-linear rounded-full border-8 border-t-8 border-blue-600 h-16 w-16"></div>
+                <div className="flex items-center space-x-2 mt-2">
+                  <input
+                    type="range"
+                    min="1"
+                    max="1000"
+                    step="1"
+                    value={maxIter}
+                    onChange={(e) => setMaxIter(parseInt(e.target.value))}
+                    className="w-full"
+                  />
+                  <span className="text-blue-800 font-semibold">
+                    {maxIter}
+                  </span>
                 </div>
-              ) : plotData ? (
-                <>
-            <Plot
-              data={[
-                // 1) Contour trace for the decision boundary & margins
-                {
-                  x: plotData.decision_boundary.xx[0],
-                  y: plotData.decision_boundary.yy.map((row) => row[0]),
-                  z: plotData.decision_boundary.Z,
-                  type: "contour",
-                  colorscale: "RdBu",
-                  autocontour: false,
-                  contours: {
-                    start: -1, // begin contour at -1
-                    end: 1,    // end contour at +1
-                    size: 1,   
-                    showlines: true,
-                    coloring: "fill",
-                  },
-                  opacity: 0.5,
-                  hoverinfo: "none",
-                  name: "Decision Region",
-                },
-                // 2) Scatter trace for data points
-                {
-                  x: plotData.scatter_data.X.map((p) => p[0]),
-                  y: plotData.scatter_data.X.map((p) => p[1]),
-                  mode: "markers",
-                  marker: {
-                    color: plotData.scatter_data.y,
-                    colorscale: "Viridis",
-                    size: 8,
-                  },
-                  name: "Data Points",
-                },
-                // 3) Scatter trace for support vectors
-                {
-                  x: plotData.support_vectors.map((p) => p[0]),
-                  y: plotData.support_vectors.map((p) => p[1]),
-                  mode: "markers",
-                  marker: {
-                    color: "red",
-                    symbol: "x",
-                    size: 10,
-                  },
-                  name: "Support Vectors",
-                },
-              ]}
-              layout={{
-                title: "النقاط وخط الفصل (Decision Boundary)",
-                xaxis: { title: "X1" },
-                yaxis: { title: "X2" },
-                margin: { t: 50, l: 50, r: 50, b: 50 },
-              }}
-            />
+              </label>
 
-                </>
+              {loading && (
+                <p className="text-blue-500 font-semibold">
+                  جارٍ حساب النتائج...
+                </p>
+              )}
+            </div>
+
+            {/* Right Column: Plot */}
+            <div>
+              {plotData ? (
+                <Plot
+                  data={[
+                    // 1) Contour trace for decision region
+                    {
+                      x: plotData.decision_boundary.xx[0],
+                      y: plotData.decision_boundary.yy.map((row) => row[0]),
+                      z: plotData.decision_boundary.Z,
+                      type: "contour",
+                      colorscale: "RdBu",
+                      autocontour: false,
+                      contours: {
+                        start: -1,
+                        end: 1,
+                        size: 1,
+                        showlines: true,
+                        coloring: "fill",
+                      },
+                      opacity: 0.5,
+                      hoverinfo: "none",
+                      name: "Decision Region",
+                    },
+                    // 2) Scatter trace for data points
+                    {
+                      x: plotData.scatter_data.X.map((p) => p[0]),
+                      y: plotData.scatter_data.X.map((p) => p[1]),
+                      mode: "markers",
+                      marker: {
+                        color: plotData.scatter_data.y,
+                        colorscale: "Viridis",
+                        size: 8,
+                      },
+                      name: "Data Points",
+                    },
+                    // 3) Scatter trace for support vectors
+                    {
+                      x: plotData.support_vectors.map((p) => p[0]),
+                      y: plotData.support_vectors.map((p) => p[1]),
+                      mode: "markers",
+                      marker: {
+                        color: "red",
+                        symbol: "x",
+                        size: 10,
+                      },
+                      name: "Support Vectors",
+                    },
+                  ]}
+                  layout={{
+                    title: "النقاط وخط الفصل (Decision Boundary)",
+                    xaxis: { title: "X1" },
+                    yaxis: { title: "X2" },
+                    margin: { t: 50, l: 50, r: 50, b: 50 },
+                  }}
+                  style={{ width: "100%", height: "500px" }}
+                />
               ) : (
                 <p className="text-blue-600 font-bold text-center">
-                  ابدأ المحاكاة لرؤية النتائج.
+                  حرّك المؤشرات أو اختر نوع النواة لرؤية النتائج.
                 </p>
               )}
             </div>
