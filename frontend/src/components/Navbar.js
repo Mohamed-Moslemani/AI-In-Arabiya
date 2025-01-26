@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 
-const Navbar = ({ isLoggedIn, onLogout }) => {
+const Navbar = () => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -18,63 +18,30 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
             to="/"
             className="text-white font-bold text-3xl hover:text-blue-200 transition duration-300"
           >
-خوارزمياتك    
+            خوارزمياتك
           </Link>
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center space-x-6">
-            {!isLoggedIn ? (
-              <>
-                <Link
-                  to="/login"
-                  className="text-white hover:bg-blue-500 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:shadow-lg"
-                >
-                  تسجيل الدخول
-                </Link>
-                <Link
-                  to="/signup"
-                  className="bg-white text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:shadow-lg"
-                >
-                  التسجيل
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/profile"
-                  className="text-white hover:bg-blue-500 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:shadow-lg"
-                >
-                  الملف الشخصي
-                </Link>
-                <Link
-                  to="/dashboard"
-                  className="text-white hover:bg-blue-500 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:shadow-lg"
-                >
-                  لوحة القيادة
-                </Link>
-
-                <Link
-                  to="/algorithms"
-                  className="text-white hover:bg-blue-500 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:shadow-lg"
-                >
-                  محاكاة الخوارزميات
-                </Link>
-                
-                <Link
-                  to="/notes"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-white hover:bg-blue-500 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300"
-                >
-                  أسئلة وأجوبة
-                </Link>
-                <button
-                  onClick={onLogout}
-                  className="text-white bg-red-500 hover:bg-red-600 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:shadow-lg"
-                >
-                  تسجيل الخروج
-                </button>
-              </>
-            )}
+          
+            <Link
+              to="/dashboard"
+              className="text-white hover:bg-blue-500 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:shadow-lg"
+            >
+              لوحة القيادة
+            </Link>
+            <Link
+              to="/algorithms"
+              className="text-white hover:bg-blue-500 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:shadow-lg"
+            >
+              محاكاة الخوارزميات
+            </Link>
+            <Link
+              to="/notes"
+              className="text-white hover:bg-blue-500 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300"
+            >
+              أسئلة وأجوبة
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -93,66 +60,27 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-gradient-to-r from-blue-600 to-blue-400 px-4 pb-4">
           <div className="flex flex-col space-y-3">
-            {!isLoggedIn ? (
-              <>
-                <Link
-                  to="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-white hover:bg-blue-500 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300"
-                >
-                  تسجيل الدخول
-                </Link>
-                <Link
-                  to="/signup"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="bg-white text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300"
-                >
-                  التسجيل
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/profile"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-white hover:bg-blue-500 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300"
-                >
-                  الملف الشخصي
-                </Link>
-                <Link
-                  to="/dashboard"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-white hover:bg-blue-500 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300"
-                >
-                  لوحة القيادة
-                </Link>
-                <Link
-                  to="/algorithms"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-white hover:bg-blue-500 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300"
-                >
-                  محاكاة الخوارزميات
-                </Link>
-
-                <Link
-                  to="/notes"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-white hover:bg-blue-500 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300"
-                >
-                  أسئلة وأجوبة
-                </Link>
-
-                <button
-                  onClick={() => {
-                    onLogout();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="text-white bg-red-500 hover:bg-red-600 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300"
-                >
-                  تسجيل الخروج
-                </button>
-              </>
-            )}
+            <Link
+              to="/dashboard"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-white hover:bg-blue-500 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300"
+            >
+              لوحة القيادة
+            </Link>
+            <Link
+              to="/algorithms"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-white hover:bg-blue-500 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300"
+            >
+              محاكاة الخوارزميات
+            </Link>
+            <Link
+              to="/notes"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-white hover:bg-blue-500 px-4 py-2 rounded-md text-sm font-medium transition-all duration-300"
+            >
+              أسئلة وأجوبة
+            </Link>
           </div>
         </div>
       )}

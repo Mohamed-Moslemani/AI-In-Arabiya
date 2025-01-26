@@ -46,7 +46,7 @@ async def login(user: UserLogin):
     db_user = authenticate_user(user.email, user.password)
     if db_user:
         access_token = create_access_token({"user_id": str(db_user["_id"])})
-        print(f"Access token generated: {access_token}")  # Debugging
+        print(f"Access token generated: {access_token}") 
         return {"access_token": access_token}
     raise HTTPException(status_code=401, detail="Invalid credentials")
 

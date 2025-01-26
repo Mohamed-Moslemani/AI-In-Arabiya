@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import LinearRegressionImage from "../assets/images/linearregression.png";
-import LogisticRegressionImage from "../assets/images/linearregression.png"; // Update as needed
+import LogisticRegressionImage from "../assets/images/linearregression.png"; 
 import SVMImage from "../assets/images/bg.png";
 import KNNImage from "../assets/images/bg.png";
 import DecisionTreeImage from "../assets/images/decisiontree.svg";

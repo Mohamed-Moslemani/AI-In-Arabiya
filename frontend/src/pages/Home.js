@@ -14,7 +14,7 @@ const Home = () => {
       {/* Hero Section */}
       <div className="relative flex flex-col items-center text-center px-6 py-16 lg:py-24 space-y-10">
         <h1 className="text-5xl md:text-7xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-blue-400">
-          خوارزمياتك - منصة تعليمية مبتكرة
+      خوارزمياتك - ذكاء بدون تعقيد  
         </h1>
         <p className="text-2xl md:text-3xl text-blue-600 font-medium italic">
           <Typewriter

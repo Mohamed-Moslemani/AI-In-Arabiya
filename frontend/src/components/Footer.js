@@ -8,9 +8,9 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8">
           {/* About Section */}
           <div>
-            <h3 className="text-xl font-bold mb-4">AI بالعربية</h3>
+            <h3 className="text-xl font-bold mb-4">خوارزمياتك</h3>
             <p className="text-sm text-blue-100">
-              منصة متكاملة لتعليم وتطوير مهارات الذكاء الاصطناعي باللغة العربية
+لأننا نؤمن بأن الذكاء الإصطناعي حق لكل فرد في مجتمعنا
             </p>
           </div>
 
@@ -24,8 +24,8 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/login" className="hover:text-blue-200 transition duration-300">
-                  تسجيل الدخول
+                <Link to="/Panels" className="hover:text-blue-200 transition duration-300">
+محاكاة الخوارزميات
                 </Link>
               </li>
               <li>

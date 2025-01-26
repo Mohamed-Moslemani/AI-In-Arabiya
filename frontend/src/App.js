@@ -17,7 +17,7 @@ import AIApplications from "./pages/AIApplications";
 import WhatIsAI from "./pages/WhatIdAI.js";
 import AIAlgorithms from "./pages/AIAlgorithms";
 import Dashboard from "./pages/Dashboard.js"
-
+import KNNPage from "./pages/KNN.js";
 // Create a wrapper component to handle navigation
 function AppRoutes({ isLoggedIn, userData, handleLogin, handleLogout }) {
   const navigate = useNavigate();
@@ -71,7 +71,8 @@ function AppRoutes({ isLoggedIn, userData, handleLogin, handleLogout }) {
           <Route path="/simulate/decision-tree" element={<DecisionTreePage />} />
           <Route path="/notes" element={<Notes />} />
           <Route path="/Dashboard" element={<Dashboard />} />
- 
+          <Route path="/knn" element={KNNPage} />
+
 
         </Routes>
       </main>

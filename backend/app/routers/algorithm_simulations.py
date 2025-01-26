@@ -176,9 +176,12 @@ async def simulate_knn(params: KNNParams):
         Z = Z.reshape(xx.shape)
 
         return {
-            "model_score": knn_model.score(X, y),
-            "decision_boundary": {"xx": xx.tolist(), "yy": yy.tolist(), "Z": Z.tolist()},
+        "model_score": knn_model.score(X, y),
+        "decision_boundary": {"xx": xx.tolist(), "yy": yy.tolist(), "Z": Z.tolist()},
+        "scatter_data": {"X": X.tolist(), "y": y.tolist()},
         }
+
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

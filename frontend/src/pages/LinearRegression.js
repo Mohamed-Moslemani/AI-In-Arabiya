@@ -35,9 +35,7 @@ const LinearRegressionPage = () => {
     }
   };
 
-  // Trigger fetch whenever any of the inputs changes
   useEffect(() => {
-    // For real-world scenarios, you may want to debounce here
     fetchSimulation(learningRate, iterations, initialWeights);
   }, [learningRate, iterations, initialWeights]);
 
