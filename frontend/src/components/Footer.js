@@ -40,8 +40,8 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">تواصل معنا</h4>
             <ul className="space-y-2">
-              <li>البريد الإلكتروني: info@aibilarabi.com</li>
-              <li>الهاتف: +966 11 234 5678</li>
+              <li>info@aibilarabi.com</li>
+              <li>+961 81592250</li>
             </ul>
           </div>
 
@@ -73,7 +73,7 @@ const Footer = () => {
 
         <div className="mt-8 pt-8 border-t border-blue-500 text-center">
           <p className="text-sm text-blue-100">
-            &copy; 2024 AI بالعربية. جميع الحقوق محفوظة
+             خوارزمياتك - جميع الحقوق محفوظة 2025 &copy;
           </p>
         </div>
       </div>

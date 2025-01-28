@@ -1,7 +1,7 @@
 import React from "react";
 import FallingArabicLetters from "../components/falling_letters";
 import { ReactComponent as AiNotesIcon } from "../assets/images/notes-svgrepo-com.svg";
-import { ReactComponent as AiAssistantIcon } from "../assets/images/robot-ai-svgrepo-com.svg";
+import { ReactComponent as Algorithm } from "../assets/images/algorithm.svg";
 import { ReactComponent as TestsSimulationIcon } from "../assets/images/graph-and-people-svgrepo-com.svg";
 import { Typewriter } from "react-simple-typewriter";
 
@@ -49,37 +49,38 @@ const Home = () => {
 
       {/* Feature 1 */}
       <section className="relative bg-gradient-to-br from-blue-800 to-blue-600 text-white px-6 py-16 lg:py-24">
-        <div className="max-w-5xl mx-auto flex flex-col items-center text-center space-y-6">
-          <AiNotesIcon className="w-20 h-20 text-white mb-4" />
-          <h2 className="text-3xl font-bold">ملاحظات الذكاء الاصطناعي بالعربية</h2>
-          <p className="text-lg max-w-xl">
-            تعلم المفاهيم الأساسية والمتقدمة للذكاء الاصطناعي من خلال ملاحظات
-            باللغة العربية.
-          </p>
-        </div>
+          <div className="max-w-5xl mx-auto flex flex-col items-center text-center space-y-6">
+      <AiNotesIcon className="w-20 h-20 text-white mb-4" />
+      <h2 className="text-3xl font-bold">أسئلة شائعة في الذكاء الاصطناعي</h2>
+      <p className="text-lg max-w-xl">
+        تعرّف على مفاهيم الذكاء الاصطناعي بسهولة وبالعربية.
+      </p>
+    </div>
+
       </section>
 
-      {/* Feature 2 */}
-      <section className="relative bg-gradient-to-br from-blue-600 to-blue-500 text-white px-6 py-16 lg:py-24">
-        <div className="max-w-5xl mx-auto flex flex-col items-center text-center space-y-6">
-          <AiAssistantIcon className="w-20 h-20 text-white mb-4" />
-          <h2 className="text-3xl font-bold">مساعد الذكاء الاصطناعي</h2>
-          <p className="text-lg max-w-xl">
-            اسأل المساعد الذكي لشرح أي مفهوم في الذكاء الاصطناعي باللغة العربية.
-          </p>
-        </div>
-      </section>
+    {/* Feature 2 */}
+    <section className="relative bg-gradient-to-br from-blue-600 to-blue-500 text-white px-6 py-16 lg:py-24">
+      <div className="max-w-5xl mx-auto flex flex-col items-center text-center space-y-6">
+        <Algorithm className="w-20 h-20 text-white mb-4" />
+        <h2 className="text-3xl font-bold">خوارزمياتك التفاعلية</h2>
+        <p className="text-lg max-w-xl">
+          اكتشف الخوارزميات خطوة بخطوة عبر شروحات مبسطة وأمثلة عملية باللغة العربية.
+        </p>
+      </div>
+    </section>
+
 
       {/* Feature 3 */}
       <section className="relative bg-gradient-to-br from-blue-500 to-blue-400 text-white px-6 py-16 lg:py-24">
         <div className="max-w-5xl mx-auto flex flex-col items-center text-center space-y-6">
           <TestsSimulationIcon className="w-20 h-20 text-white mb-4" />
-          <h2 className="text-3xl font-bold">اختبارات ومحاكاة</h2>
-          <p className="text-lg max-w-xl">
-            اختبر معلوماتك في الذكاء الاصطناعي بمستويات مختلفة، مع محاكاة
-            تفاعلية للخوارزميات باستخدام الرسوم البيانية.
-          </p>
-        </div>
+        <h2 className="text-3xl font-bold">محاكاة تفاعلية</h2>
+        <p className="text-lg max-w-xl">
+          استكشف الخوارزميات برسوم بيانية تفاعلية لفهم الذكاء الاصطناعي بعمق.
+        </p>
+      </div>
+
       </section>
     </div>
   );
